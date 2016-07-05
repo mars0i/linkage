@@ -1,6 +1,12 @@
 # re_linkage
 
-Experiments with NVD3, d3.js, Reagent (react.js), and figwheel.
+Experiments with linkage disequilibrium using Clojurescript, NVD3,
+d3.js, Reagent (react.js), and figwheel.
+
+Includes Clojurescript implementation of model of two-locus selection in
+John Gillespie's _Population Genetics: A Concise Guide_, 2nd ed., Johns
+Hopkins University Press 2004, section 4.2, as described in Problem 4.3.
+cf. Gillespie's Python solution at the end of the chapter.
 
 ## Overview
 
@@ -34,6 +40,9 @@ get live reloading, nor a REPL.
 
 ## License
 
-Copyright © 2014 FIXME
+This software is copyright 2016 by [Marshall
+Abrams](http://members.logical.net/~marshall/), and is distributed
+under the [Gnu General Public License version
+3.0](http://www.gnu.org/copyleft/gpl.html) as specified in the file
+LICENSE, except where noted.
 
-Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.

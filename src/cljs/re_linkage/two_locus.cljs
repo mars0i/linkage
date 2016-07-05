@@ -2,6 +2,7 @@
 ;;
 ;; This software is copyright 2016 by Marshall Abrams, and is distributed
 ;; under the Gnu General Public License version 3.0 as specified in the
+;; the file LICENSE.
 
 ;; Clojure implementation of model of two-locus selection
 ;; in John Gillespie's _Population Genetics: A Concise Guide_, 2nd ed.,
