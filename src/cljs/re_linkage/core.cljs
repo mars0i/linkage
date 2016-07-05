@@ -73,7 +73,7 @@
     [:svg {:id "chart-svg" :height "400px"}]]]) ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
 
 (defn home-did-mount [max-r s h]
-  (swap! chart-config$ (make-chart-config max-r s h))
+  (swap! chart-config$ make-chart-config max-r s h) ; 0.02 0.1 0.5
   (setup-chart "#chart-svg" @chart-config$))
 
 (defn home-page-component [max-r s h]
@@ -82,7 +82,7 @@
                    :component-did-mount home-did-mount}))
 
 (defn home-page []
-  #(home-page-component 0.02 0.1 0.5))
+  (home-page-component 0.02 0.1 0.5))
 
 (defn current-page []
   [:div [(session/get :current-page)]])
