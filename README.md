@@ -3,14 +3,12 @@
 Experiments with linkage disequilibrium using Clojurescript, NVD3,
 d3.js, Reagent (react.js), and figwheel.
 
+## Overview
+
 Includes Clojurescript implementation of model of two-locus selection in
 John Gillespie's _Population Genetics: A Concise Guide_, 2nd ed., Johns
 Hopkins University Press 2004, section 4.2, as described in Problem 4.3.
 cf. Gillespie's Python solution at the end of the chapter.
-
-## Overview
-
-FIXME: Write a paragraph about the library/project and highlight its goals.
 
 ## Setup
 
