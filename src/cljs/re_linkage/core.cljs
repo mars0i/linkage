@@ -63,30 +63,6 @@
         (call chart))
     chart))
 
-;; original code for next lines: nv.utils.windowResize(chart.update);
-;; or: nv.utils.windowResize(function() {chart.update()});
-;(.windowResize js/nv.utils (.-update chart))
-;(.windowResize js/nv.utils chart.update)
-;(.. js/nv -utils (windowResize (fn [] (.update chart))))
-;(.windowResize js/nv.utils #(chart.update))
-;(.utils.windowResize js/nv (.update chart))
-;(.windowResize (.utils js/nv) (.update chart))
-
-;(def chart (setup-chart))
-;(.addGraph js/nv chart)
-;; https://github.com/nvd3-community/nvd3/blob/gh-pages/examples/lineChart.html
-;; says:
-;; "Wrapping in nv.addGraph allows for '0 timeout render', stores
-;; rendered charts in nv.graphs, and may do more in the future... it's
-;; NOT required"
-
-;; -------------------------
-;; Views
-
-;(defn home-render []
-;  [:div {:style {:min-width "310px" :max-width "800px" 
-;                 :height "400px" :margin "0 auto"}}])
-
 ;; NOTE to get this to look like the NVD3 examples on the web, it was
 ;; crucial to use nv.d3.css instead of or from
 ;; resources/public/css/site.css.
@@ -106,18 +82,6 @@
 (defn home-page []
   (r/create-class {:reagent-render home-render
                    :component-did-mount home-did-mount}))
-
-;(defn home-page []
-;  [:div [:h2 "Welcome to re_linkage"]
-;   [:div [:a {:href "/about"} "go to about page"]]])
-
-;(defn about-page []
-;  [:div [:h2 "About re_linkage"]
-;   [:div [:a {:href "/"} "go to the home page"]]
-;   [:div {:id "chart-div"}
-;    [:svg {:id "chart-svg" :width "400px" :height "300px"}]]
-;   [:div {:id "data-div"} 
-;    [:text (pp/cl-format nil "~{ ~,3f~}" (second het-coord-seqs))]]])
 
 (defn current-page []
   [:div [(session/get :current-page)]])
