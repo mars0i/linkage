@@ -38,8 +38,8 @@
         }])))
 
 ;; name atoms with terminal $
-(def chart-config$
-  (r/atom (make-chart-config 0.03 0.1 0.5)))
+(def chart-config$ (r/atom "not yet initialized"))
+;  (r/atom (make-chart-config 0.03 0.1 0.5)))
 
 (defn setup-chart [svg-id chart-config]
   (let [chart (.lineChart js/nv.models)]
@@ -61,23 +61,28 @@
         (.axisLabel "final/init heteterozygosity at B locus")
         (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
     ;; add chart to dom using d3:
-    (.. js/d3
-        (select svg-id)
+    (.. js/d3             ; note this code assumes we have only one page
+        (select svg-id)   ; or that svg-id would be different on diff pages
         (datum chart-config)
         (call chart)))) 
      ;; in nvd3 examples, we return also chart, but not needed here
 
-(defn home-render []
+(defn home-render [_ _ _]
   [:div [:h3 "Effect of selection on a linked neutral locus (Gillespie 2ed sect 4.2)"]
    [:div {:id "chart-div"}
     [:svg {:id "chart-svg" :height "400px"}]]]) ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
 
-(defn home-did-mount [this]
+(defn home-did-mount [max-r s h]
+  (swap! chart-config$ (make-chart-config max-r s h))
   (setup-chart "#chart-svg" @chart-config$))
 
-(defn home-page []
-  (r/create-class {:reagent-render home-render
+(defn home-page-component [max-r s h]
+  (r/create-class {:display-name "home-page component"
+                   :reagent-render home-render
                    :component-did-mount home-did-mount}))
+
+(defn home-page []
+  #(home-page-component 0.02 0.1 0.5))
 
 (defn current-page []
   [:div [(session/get :current-page)]])
