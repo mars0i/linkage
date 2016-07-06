@@ -76,7 +76,7 @@
         h$ (atom h)]        ; every time a field changes
     [:form 
      {:on-submit #(do (pp/pprint s$)
-                    (swap! chart-params$ assoc :s @s$)
+                      (swap! chart-params$ assoc :s @s$)
                       (pp/pprint @chart-params$) ; DEBUG
                       )}
      [:text "s:"]
