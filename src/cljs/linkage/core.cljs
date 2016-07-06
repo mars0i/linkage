@@ -46,7 +46,7 @@
 
 (def chart-svg-id "#chart-svg")
 
-(defn setup-chart [svg-id chart-params$]
+(defn make-chart [svg-id chart-params$]
   (let [chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
     (-> chart
@@ -96,7 +96,7 @@
    [float-input :h chart-params$ 5 "heterozygote coeff h"]
    [float-input :max-r chart-params$ 5 "max recomb prob r"]
    [:text "  "] ; add space before button
-   [:button {:type "button" :on-click #(setup-chart chart-svg-id chart-params$)}
+   [:button {:type "button" :on-click #(make-chart chart-svg-id chart-params$)}
     "re-plot"]])
 
 (defn home-render []
@@ -109,7 +109,7 @@
     [plot-params-form chart-params$]]])
 
 (defn home-did-mount [this]
-  (setup-chart chart-svg-id chart-params$))
+  (make-chart chart-svg-id chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
