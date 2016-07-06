@@ -29,8 +29,8 @@
 ;; name atoms with terminal $
 (def chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5}))
 
-(defn update-chart-params! [k v]
-  (swap! chart-params$ assoc k v))
+(defn update-params! [params$ k v]
+  (swap! params$ assoc k v))
 
 (defn make-chart-config [chart-params$]
   (let [{:keys [max-r s h]} @chart-params$
@@ -44,6 +44,8 @@
         :fillOpacity -1}])))
 
 ;(def chart-config (make-chart-config @chart-params$))
+
+(def chart-svg-id "#chart-svg")
 
 (defn setup-chart [svg-id chart-params$]
   (let [chart (.lineChart js/nv.models)]
@@ -71,34 +73,44 @@
         (call chart)))) 
      ;; in nvd3 examples, we return also chart, but not needed here
 
+(defn float-input 
+  "Create a text input that accepts numbers.  k is keyword to be used to extract
+  a default value from params$, and to be passed to update-params!, 
+  but will also be converted to a string an set as the id and name properties of 
+  the input element."
+  [k params$ size label]
+  (let [id (name k)]
+    [:span {:id (str id "-div")}
+     [:text (str "    " label ": ") ]
+     [:input {:id id
+              :name id
+              :type "text"
+              :size size
+              :defaultValue (k @params$)
+              :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
+     ]))
+
 (defn plot-params-form
   [chart-params$]
-  (let [{:keys [max-r s h]} @chart-params$
-        max-r$ (atom max-r) ; regular Clojurescript atoms--
-        s$ (atom s)         ; it's better not to force update
-        h$ (atom h)]        ; every time a field changes
-    [:form 
-     [:text "s: "]
-     [:input {:id "s-text-input"
-              :name "s"
-              :type "text"
-              :size 5
-              :defaultValue @s$
-              :on-change #(update-chart-params! :s (js/parseFloat (-> % .-target .-value)))}]
-     [:button {:type "button"
-               :on-click #(do (pp/pprint @chart-params$) ; DEBUG
-                              (setup-chart "#chart-svg" chart-params$))}
-      "re-plot"]]))
-
+  [:form 
+   [float-input :s chart-params$ 5 "selection coeff s"]
+   [float-input :h chart-params$ 5 "heterozygote coeff h"]
+   [float-input :max-r chart-params$ 5 "max recomb prob r"]
+   [:text "  "] ; add space before button
+   [:button {:type "button" :on-click #(setup-chart chart-svg-id chart-params$)}
+    "re-plot"]])
 
 (defn home-render []
-  [:div [:h3 "Effect of selection on a linked neutral locus (Gillespie 2ed sect 4.2)"]
+  [:div
+   [:h3 
+    "Effect of selection on a linked neutral locus (Gillespie's Concise Guide 2ed sect 4.2)"]
+   [:text "Marshall Abrams (© 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id "chart-svg" :height "400px"}] ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
     [plot-params-form chart-params$]]])
 
 (defn home-did-mount [this]
-  (setup-chart "#chart-svg" chart-params$))
+  (setup-chart chart-svg-id chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
