@@ -42,5 +42,8 @@ This software is copyright 2016 by [Marshall
 Abrams](http://members.logical.net/~marshall/), and is distributed
 under the [Gnu General Public License version
 3.0](http://www.gnu.org/copyleft/gpl.html) as specified in the file
-LICENSE, except where noted.
+LICENSE, except where noted, or where code has been included that was
+released under a different license.  (For example, some of the source
+files were created automatically by running 'lein new reagent ...', and
+may be under a different license if I haven't modified them much.)
 
