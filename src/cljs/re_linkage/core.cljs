@@ -26,22 +26,23 @@
         ys (map #(two/B-het-ratio % s h) xs)]
     (vec (map #(hash-map :x %1 :y %2) xs ys))))
 
-(defn make-chart-config [max-r s h]
-  (let [coords (het-rat-coords max-r s h)]
+;; name atoms with terminal $
+(def chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5}))
+
+(defn make-chart-config [chart-params$]
+  (let [{:keys [max-r s h]} @chart-params$
+        coords (het-rat-coords max-r s h)]
     (clj->js
       [{:values coords 
         :key "het-rat" 
         :color "#0000ff" 
         ;:strokeWidth 1 
         :area false
-        :fillOpacity -1
-        }])))
+        :fillOpacity -1}])))
 
-;; name atoms with terminal $
-(def chart-config$
-  (r/atom (make-chart-config 0.03 0.1 0.5)))
+;(def chart-config (make-chart-config @chart-params$))
 
-(defn setup-chart [svg-id chart-config]
+(defn setup-chart [svg-id chart-params$]
   (let [chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
     (-> chart
@@ -63,17 +64,38 @@
     ;; add chart to dom using d3:
     (.. js/d3
         (select svg-id)
-        (datum chart-config)
+        (datum (make-chart-config chart-params$))
         (call chart)))) 
      ;; in nvd3 examples, we return also chart, but not needed here
+
+(defn plot-params-form
+  [chart-params$]
+  (let [{:keys [max-r s h]} @chart-params$
+        max-r$ (atom max-r) ; regular Clojurescript atoms--
+        s$ (atom s)         ; it's better not to force update
+        h$ (atom h)]        ; every time a field changes
+    [:form 
+     {:on-submit #(swap! chart-params$ assoc :s @s$)}
+     [:text "s:"]
+     [:input {:id "s-text-input"
+              :name "s"
+              :type "text"
+              :required ""
+              :defaultValue @s$
+              :on-change #(reset! s$ (-> % .-target .-value))
+              }]
+     [:input {:type "submit"
+              :value "re-plot"}]]))
+
 
 (defn home-render []
   [:div [:h3 "Effect of selection on a linked neutral locus (Gillespie 2ed sect 4.2)"]
    [:div {:id "chart-div"}
-    [:svg {:id "chart-svg" :height "400px"}]]]) ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
+    [:svg {:id "chart-svg" :height "400px"}] ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
+    [plot-params-form chart-params$]]])
 
 (defn home-did-mount [this]
-  (setup-chart "#chart-svg" @chart-config$))
+  (setup-chart "#chart-svg" chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
