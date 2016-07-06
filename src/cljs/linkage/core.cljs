@@ -22,6 +22,8 @@
 ;; app code
 
 (defn het-rat-coords [max-r s h]
+  "Generate heterozygosity final/initial ratio for recombination rates r
+  from 0 to max-r, using selection coefficient s and heterozygote factor h."
   (let [xs (range 0.000 (+ max-r 0.00001) 0.0001)  ; different from in two-locus src
         ys (map #(two/B-het-ratio % s h) xs)]
     (vec (map #(hash-map :x %1 :y %2) xs ys))))
@@ -30,9 +32,11 @@
 (def chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5}))
 
 (defn update-params! [params$ k v]
+  "Update params$ with value v for key k."
   (swap! params$ assoc k v))
 
 (defn make-chart-config [chart-params$]
+  "Make NVD3 chart configuration data object."
   (let [{:keys [max-r s h]} @chart-params$]
     (clj->js
       [{:values (het-rat-coords max-r s h)
@@ -47,6 +51,8 @@
 (def chart-svg-id "#chart-svg")
 
 (defn make-chart [svg-id chart-params$]
+  "Create an NVD3 line chart with configuration parameters in @chart-params$
+  and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
     (-> chart
@@ -74,9 +80,9 @@
 
 (defn float-input 
   "Create a text input that accepts numbers.  k is keyword to be used to extract
-  a default value from params$, and to be passed to update-params!, 
-  but will also be converted to a string an set as the id and name properties of 
-  the input element."
+  a default value from params$, and to be passed to update-params!.  It will also 
+  be converted to a string an set as the id and name properties of the input 
+  element."
   [k params$ size label]
   (let [id (name k)]
     [:span {:id (str id "-div")}
@@ -90,25 +96,28 @@
      ]))
 
 (defn plot-params-form
-  [chart-params$]
+  "Create form to allow changing model parameters and creating a new chart."
+  [svg-id chart-params$]
   [:form 
    [float-input :s chart-params$ 5 "selection coeff s"]
    [float-input :h chart-params$ 5 "heterozygote coeff h"]
    [float-input :max-r chart-params$ 5 "max recomb prob r"]
    [:text "  "] ; add space before button
-   [:button {:type "button" :on-click #(make-chart chart-svg-id chart-params$)}
+   [:button {:type "button" :on-click #(make-chart svg-id chart-params$)}
     "re-plot"]])
 
 (defn home-render []
+  "Set up main page (except for chart, which is made elsewhere)."
   [:div
    [:h3 
     "Effect of selection on a linked neutral locus (Gillespie's Concise Guide 2ed sect 4.2)"]
    [:text "Marshall Abrams (© 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id "chart-svg" :height "400px"}] ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
-    [plot-params-form chart-params$]]])
+    [plot-params-form chart-svg-id chart-params$]]])
 
 (defn home-did-mount [this]
+  "Add initial chart to main page."
   (make-chart chart-svg-id chart-params$))
 
 (defn home-page []
