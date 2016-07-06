@@ -29,6 +29,9 @@
 ;; name atoms with terminal $
 (def chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5}))
 
+(defn update-chart-params! [k v]
+  (swap! chart-params$ assoc k v))
+
 (defn make-chart-config [chart-params$]
   (let [{:keys [max-r s h]} @chart-params$
         coords (het-rat-coords max-r s h)]
@@ -75,8 +78,7 @@
         s$ (atom s)         ; it's better not to force update
         h$ (atom h)]        ; every time a field changes
     [:form 
-     {:on-submit #(do (pp/pprint s$)
-                      (swap! chart-params$ assoc :s @s$)
+     {:on-submit #(do 
                       (pp/pprint @chart-params$) ; DEBUG
                       )}
      [:text "s:"]
@@ -85,9 +87,9 @@
               :type "text"
               :required ""
               :defaultValue @s$
-              :on-change #(do (reset! s$ (-> % .-target .-value))
-                              (pp/pprint ["on-change: " s$]))
-              }]
+              :on-change #(update-chart-params! :s
+                                                (js/parseFloat
+                                                  (-> % .-target .-value)))}]
      [:input {:type "submit"
               :value "re-plot"}]]))
 
