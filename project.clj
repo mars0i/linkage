@@ -1,8 +1,8 @@
-(defproject re_linkage "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+(defproject linkage "0.1.0"
+  :description "Experiments with linkage disequilibrium"
+  :url "https://github.com/mars0i/linkage"
+  :license {:name "Gnu General Public License version 3.0"
+            :url "http://www.gnu.org/copyleft/gpl.html"}
 
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring-server "0.4.0"]
@@ -27,14 +27,14 @@
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
-  :ring {:handler re-linkage.handler/app
-         :uberwar-name "re_linkage.war"}
+  :ring {:handler linkage.handler/app
+         :uberwar-name "linkage.war"}
 
   :min-lein-version "2.5.0"
 
-  :uberjar-name "re_linkage.jar"
+  :uberjar-name "linkage.jar"
 
-  :main re-linkage.server
+  :main linkage.server
 
   :clean-targets ^{:protect false}
   [:target-path
@@ -59,16 +59,13 @@
             :app
             {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
              :compiler
-             {:main "re_linkage.dev"
+             {:main "linkage.dev"
               :asset-path "/js/out"
               :output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/cljsbuild/public/js/out"
               :source-map true
               :optimizations :none
               :pretty-print  true}}
-
-
-
             }
    }
 
@@ -77,14 +74,11 @@
   {:http-server-root "public"
    :server-port 3449
    :nrepl-port 7002
-   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
-                      ]
+   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
    :css-dirs ["resources/public/css"]
-   :ring-handler re-linkage.handler/app}
+   :ring-handler linkage.handler/app}
 
-
-
-  :profiles {:dev {:repl-options {:init-ns re-linkage.repl}
+  :profiles {:dev {:repl-options {:init-ns linkage.repl}
 
                    :dependencies [[ring/ring-mock "0.3.0"]
                                   [ring/ring-devel "1.5.0"]

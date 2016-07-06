@@ -1,5 +1,5 @@
-(ns re_linkage.repl
-  (:use re_linkage.handler
+(ns linkage.repl
+  (:use linkage.handler
         ring.server.standalone
         [ring.middleware file-info file]))
 

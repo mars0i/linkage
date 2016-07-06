@@ -1,4 +1,4 @@
-(ns re-linkage.util)
+(ns linkage.util)
 
 (defn foo-cljc [x]
   "I don't do a whole lot."

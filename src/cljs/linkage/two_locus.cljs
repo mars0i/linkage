@@ -10,7 +10,7 @@
 ;; as described in Problem 4.3.  cf. Gillespie's Python solution at
 ;; the end of the chapter.
 
-(ns re-linkage.two-locus)
+(ns linkage.two-locus)
 
 (defn round2
   "Round a double to the given precision (number of significant digits)"

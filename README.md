@@ -1,4 +1,4 @@
-# re_linkage
+# linkage
 
 Experiments with linkage disequilibrium using Clojurescript, NVD3,
 d3.js, Reagent (react.js), and figwheel.

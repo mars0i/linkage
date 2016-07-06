@@ -1,5 +1,5 @@
-(ns ^:figwheel-no-load re-linkage.dev
-  (:require [re-linkage.core :as core]
+(ns ^:figwheel-no-load linkage.dev
+  (:require [linkage.core :as core]
             [figwheel.client :as figwheel :include-macros true]))
 
 (enable-console-print!)

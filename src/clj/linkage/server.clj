@@ -1,5 +1,5 @@
-(ns re-linkage.server
-  (:require [re-linkage.handler :refer [app]]
+(ns linkage.server
+  (:require [linkage.handler :refer [app]]
             [config.core :refer [env]]
             [ring.adapter.jetty :refer [run-jetty]])
   (:gen-class))

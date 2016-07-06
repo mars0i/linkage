@@ -1,1 +1,1 @@
-web: java $JVM_OPTS -cp target/re_linkage.jar clojure.main -m re-linkage.server
+web: java $JVM_OPTS -cp target/linkage.jar clojure.main -m linkage.server

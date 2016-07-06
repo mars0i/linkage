@@ -1,5 +1,5 @@
-(ns re-linkage.prod
-  (:require [re-linkage.core :as core]))
+(ns linkage.prod
+  (:require [linkage.core :as core]))
 
 ;;ignore println statements in prod
 (set! *print-fn* (fn [& _]))

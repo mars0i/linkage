@@ -1,8 +1,8 @@
-(ns re-linkage.handler
+(ns linkage.handler
   (:require [compojure.core :refer [GET defroutes]]
             [compojure.route :refer [not-found resources]]
             [hiccup.page :refer [include-js include-css html5]]
-            [re_linkage.middleware :refer [wrap-middleware]]
+            [linkage.middleware :refer [wrap-middleware]]
             [config.core :refer [env]]))
 
 (def mount-target

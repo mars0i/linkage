@@ -4,13 +4,13 @@
 ;; under the Gnu General Public License version 3.0 as specified in the
 ;; the file LICENSE.
 
-(ns re-linkage.core
+(ns linkage.core
     (:require [reagent.core :as r :refer [atom]]
               [reagent.session :as session]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
               [cljs.pprint :as pp]
-              [re-linkage.two-locus :as two]
+              [linkage.two-locus :as two]
               [cljsjs.d3]
               [cljsjs.nvd3]))
 
