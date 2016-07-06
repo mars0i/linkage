@@ -109,8 +109,8 @@
 (defn home-render []
   "Set up main page (except for chart, which is made elsewhere)."
   [:div
-   [:h3 
-    "Effect of selection on a linked neutral locus (Gillespie's Concise Guide 2ed sect 4.2)"]
+   [:h3 "Effect of selection on a linked neutral locus (Gillespie's "
+        [:em "Concise Guide"] " 2ed sect 4.2)"]
    [:text "Marshall Abrams (© 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id "chart-svg" :height "400px"}] ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
