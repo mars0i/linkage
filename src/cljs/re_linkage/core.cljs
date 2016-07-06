@@ -75,14 +75,18 @@
         s$ (atom s)         ; it's better not to force update
         h$ (atom h)]        ; every time a field changes
     [:form 
-     {:on-submit #(swap! chart-params$ assoc :s @s$)}
+     {:on-submit #(do (pp/pprint s$)
+                    (swap! chart-params$ assoc :s @s$)
+                      (pp/pprint @chart-params$) ; DEBUG
+                      )}
      [:text "s:"]
      [:input {:id "s-text-input"
               :name "s"
               :type "text"
               :required ""
               :defaultValue @s$
-              :on-change #(reset! s$ (-> % .-target .-value))
+              :on-change #(do (reset! s$ (-> % .-target .-value))
+                              (pp/pprint ["on-change: " s$]))
               }]
      [:input {:type "submit"
               :value "re-plot"}]]))
