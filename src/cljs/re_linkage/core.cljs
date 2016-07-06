@@ -33,10 +33,9 @@
   (swap! params$ assoc k v))
 
 (defn make-chart-config [chart-params$]
-  (let [{:keys [max-r s h]} @chart-params$
-        coords (het-rat-coords max-r s h)]
+  (let [{:keys [max-r s h]} @chart-params$]
     (clj->js
-      [{:values coords 
+      [{:values (het-rat-coords max-r s h)
         :key "het-rat" 
         :color "#0000ff" 
         ;:strokeWidth 1 
