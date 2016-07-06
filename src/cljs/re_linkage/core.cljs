@@ -78,20 +78,17 @@
         s$ (atom s)         ; it's better not to force update
         h$ (atom h)]        ; every time a field changes
     [:form 
-     {:on-submit #(do 
-                      (pp/pprint @chart-params$) ; DEBUG
-                      )}
-     [:text "s:"]
+     [:text "s: "]
      [:input {:id "s-text-input"
               :name "s"
               :type "text"
-              :required ""
+              :size 5
               :defaultValue @s$
-              :on-change #(update-chart-params! :s
-                                                (js/parseFloat
-                                                  (-> % .-target .-value)))}]
-     [:input {:type "submit"
-              :value "re-plot"}]]))
+              :on-change #(update-chart-params! :s (js/parseFloat (-> % .-target .-value)))}]
+     [:button {:type "button"
+               :on-click #(do (pp/pprint @chart-params$) ; DEBUG
+                              (setup-chart "#chart-svg" chart-params$))}
+      "re-plot"]]))
 
 
 (defn home-render []
