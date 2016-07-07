@@ -57,13 +57,23 @@
               :libs ["cljsjs/d3.js", "cljsjs/nvd3.js"] ; ADDED BY MARSHALL
               :optimizations :advanced
               :pretty-print  false}}
-            :debug ; ADDED BY MARSHALL
+            :yo ; MARSHALL's ADDITION
             {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
              :compiler
              {:output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/cljsbuild/public/js/marshalldebug"
               :externs ["d3.inc.js", "nvd3.inc.js"]
               :libs ["cljsjs/d3.js", "cljsjs/nvd3.js"]
+              :optimizations :none
+              :pretty-print  true}}
+            :debug ; MARSHALL's ADDITION
+            {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+             :compiler
+             {:main "linkage.dev"
+              :asset-path "js/out"
+              :output-to "resources/public/js/app.js"
+              :output-dir "resources/public/js/out"
+              :source-map true
               :optimizations :none
               :pretty-print  true}}
             :app
