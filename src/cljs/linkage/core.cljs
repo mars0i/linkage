@@ -10,9 +10,9 @@
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
               [cljs.pprint :as pp]
-              [linkage.two-locus :as two]
               [cljsjs.d3]
-              [cljsjs.nvd3]))
+              [cljsjs.nvd3]
+              [linkage.two-locus :as two]))
 
 ;; NOTE to get this to look like the NVD3 examples on the web, it was
 ;; crucial to use nv.d3.css instead of or from
