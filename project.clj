@@ -69,12 +69,12 @@
             :debug ; MARSHALL's ADDITION
             {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
              :compiler
-             {:main "linkage.dev"
-              :asset-path "js/out"
+             {:main "linkage.core"
               :output-to "resources/public/js/app.js"
-              :output-dir "resources/public/js/out"
-              :source-map true
-              :optimizations :none
+              :asset-path "resources/public/js/out"
+              :output-dir "resources/public/js/temp"
+              :source-map "resources/public/js/app.js.map"
+              :optimizations :whitespace
               :pretty-print  true}}
             :app
             {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
