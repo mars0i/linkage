@@ -41,7 +41,6 @@
                            ;; Comment this out once it no longer serves you.
                            ;:open-urls ["http://localhost:3449/index.html"]
                            }
-
                 :compiler {:main linkage.core
                            :asset-path "js/compiled/out"
                            :output-to "resources/public/js/compiled/linkage.js"
@@ -55,7 +54,14 @@
                 :compiler {:output-to "resources/public/js/compiled/linkage.js"
                            :main linkage.core
                            :optimizations :advanced
-                           :pretty-print false}}]}
+                           :pretty-print false}}
+               {:id "max"
+                :source-paths ["src"]
+                :compiler {:output-to "resources/public/js/compiled/linkage.js"
+                           :main linkage.core
+                           :optimizations :none
+                           :pretty-print true}}
+			   ]}
 
   :figwheel {;; :http-server-root "public" ;; default and assumes "resources"
              ;; :server-port 3449 ;; default
