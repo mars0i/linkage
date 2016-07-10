@@ -132,26 +132,19 @@
   (r/create-class {:reagent-render home-render
                    :component-did-mount home-did-mount}))
 
-(defn current-page []
-  [:div [(session/get :current-page)]])
+;; broken:
+;(defn current-page []
+;  [:div [(session/get :current-page)]])
 
-;; -------------------------
-;; Routes
-
-;; THIS IS WHAT MAKES CALLS THE PAGE FUNCTIONS TO CREATE THE PAGES (?)
-;; NOTE THERE IS CORRESPONDING BUT DIFFERENT CODE IN handler.js
-
-(secretary/defroute "/" []
-  (session/put! :current-page #'home-page))
-
-;(secretary/defroute "/about" []
-;  (session/put! :current-page #'about-page))
+; broken:
+;(secretary/defroute "/" []
+;  (session/put! :current-page #'home-page))
 
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (r/render [current-page] (.getElementById js/document "app")))
+  (r/render [home-page] (.getElementById js/document "app")))
 
 (defn init! []
   (accountant/configure-navigation!
@@ -168,9 +161,8 @@
 
 ;; ----------------------------
 
-;; From simple figwheel template, with my additions:
+;; From simple figwheel template:
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
-(defn on-js-reload []
-)
+(defn on-js-reload [])
