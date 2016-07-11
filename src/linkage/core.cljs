@@ -21,20 +21,17 @@
 ;; -------------------------
 ;; app code
 
-(defn het-rat-coords [max-r-over-s s h]
+(defn het-rat-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
-  from 0 to (max-r-over-s * s), using selection coefficient s and heterozygote 
-  factor h.  i.e. max-r-over-s is the maximum value of r/s, but we actually use
-  values for r as input to B-het-ratio."
-  (let [max-r (* max-r-over-s s)
-        rs (range 0.000 (+ max-r 0.00001) 0.0001)
+  from 0 to max-r, using selection coefficient s and heterozygote factor h."
+  (let [rs (range 0.000 (+ max-r 0.00001) 0.0001)
         het-rats (map #(two/B-het-ratio % s h) rs)]
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
               het-rats))))      ; but we want to display it using r/s
 
 ;; Note: I name atoms with terminal $ .
-(defonce chart-params$ (atom {:max-r-over-s 0.2 :s 0.1 :h 0.5})) ; i.e. max r = 0.02
+(defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
 ;; not currently using ratom capabilities, so use a regular Clojure atom
 
 (defn update-params! [params$ k v]
@@ -43,9 +40,9 @@
 
 (defn make-chart-config [chart-params$]
   "Make NVD3 chart configuration data object."
-  (let [{:keys [max-r-over-s s h]} @chart-params$]
+  (let [{:keys [max-r s h]} @chart-params$]
     (clj->js
-      [{:values (het-rat-coords max-r-over-s s h)
+      [{:values (het-rat-coords max-r s h)
         :key "het-rat" 
         :color "#0000ff" 
         ;:strokeWidth 1 
@@ -72,7 +69,7 @@
         (.showXAxis true))
     (-> chart.xAxis
         (.axisLabel "r/s")
-        (.tickFormat (fn [d] (pp/cl-format nil "~,3f" d))))
+        (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
     (-> chart.yAxis
         (.axisLabel "final/init heteterozygosity at B locus")
         (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
@@ -106,7 +103,7 @@
   [:form 
    [float-input :s chart-params$ 5 "selection coeff s"]
    [float-input :h chart-params$ 5 "heterozygote coeff h"]
-   [float-input :max-r-over-s chart-params$ 5 "r/s (r = recomb prob)"]
+   [float-input :max-r chart-params$ 5 "max recomb prob r"]
    [:text "  "] ; add space before button
    [:button {:type "button" :on-click #(make-chart svg-id chart-params$)}
     "re-plot"]])
