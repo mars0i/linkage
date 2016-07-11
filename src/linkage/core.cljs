@@ -21,17 +21,21 @@
 ;; -------------------------
 ;; app code
 
-(defn het-rat-coords [max-r s h]
+(defn het-rat-coords [max-r-over-s s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
-  from 0 to max-r, using selection coefficient s and heterozygote factor h."
-  (let [xs (range 0.000 (+ max-r 0.00001) 0.0001)  ; different from in two-locus src
-        ys (map #(two/B-het-ratio % s h) xs)]
-    (vec (map #(hash-map :x %1 :y %2) xs ys))))
+  from 0 to (max-r-over-s * s), using selection coefficient s and heterozygote 
+  factor h.  i.e. max-r-over-s is the maximum value of r/s, but we actually use
+  values for r as input to B-het-ratio."
+  (let [max-r (* max-r-over-s s)
+        rs (range 0.000 (+ max-r 0.00001) 0.0001)
+        het-rats (map #(two/B-het-ratio % s h) rs)]
+    (vec (map #(hash-map :x %1 :y %2)
+              (map #(/ % s) rs) ; we calculated the data wrt vals of r,
+              het-rats))))      ; but we want to display it using r/s
 
-;; At this stage, I'm not using the capabilities of a ratom, so might
-;; as well just use a regular Clojure atom.
 ;; Note: I name atoms with terminal $ .
-(defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
+(defonce chart-params$ (atom {:max-r-over-s 0.2 :s 0.1 :h 0.5})) ; i.e. max r = 0.02
+;; not currently using ratom capabilities, so use a regular Clojure atom
 
 (defn update-params! [params$ k v]
   "Update params$ with value v for key k."
@@ -39,30 +43,29 @@
 
 (defn make-chart-config [chart-params$]
   "Make NVD3 chart configuration data object."
-  (let [{:keys [max-r s h]} @chart-params$]
+  (let [{:keys [max-r-over-s s h]} @chart-params$]
     (clj->js
-      [{:values (het-rat-coords max-r s h)
+      [{:values (het-rat-coords max-r-over-s s h)
         :key "het-rat" 
         :color "#0000ff" 
         ;:strokeWidth 1 
         :area false
         :fillOpacity -1}])))
 
-;(def chart-config (make-chart-config @chart-params$))
-
 (def chart-svg-id "#chart-svg")
 
 (defn make-chart [svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
-  (let [chart (.lineChart js/nv.models)]
+  (let [s (:s @chart-params$)
+        chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
     (-> chart
         (.height 400)
         (.width 600)
         ;(.margin {:left 100}) ; what does this do?
         (.useInteractiveGuideline true)
-        (.duration 300)
+        (.duration 300) ; I have no idea what this is
         (.pointSize 1)
         (.showLegend false) ; true is useful if for multiple lines on same plot
         (.showYAxis true)
@@ -103,7 +106,7 @@
   [:form 
    [float-input :s chart-params$ 5 "selection coeff s"]
    [float-input :h chart-params$ 5 "heterozygote coeff h"]
-   [float-input :max-r chart-params$ 5 "max recomb prob r"]
+   [float-input :max-r-over-s chart-params$ 5 "r/s (r = recomb prob)"]
    [:text "  "] ; add space before button
    [:button {:type "button" :on-click #(make-chart svg-id chart-params$)}
     "re-plot"]])
