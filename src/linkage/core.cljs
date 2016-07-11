@@ -80,6 +80,8 @@
         (call chart)))) 
      ;; in nvd3 examples, we return also chart, but not needed here
 
+;; Note: for comparison, in lescent, I used d3 to set the onchange of 
+;; dropdowns to a function that set a single global var for each.
 (defn float-input 
   "Create a text input that accepts numbers.  k is keyword to be used to extract
   a default value from params$, and to be passed to update-params!.  It will also 
