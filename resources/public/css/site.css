@@ -1,1 +1,15 @@
 @import url("nv.d3.min.css");
+@import url("http://fonts.googleapis.com/css?family=Pontano Sans");
+
+text {
+  font-family: "Pontano Sans";
+}
+.text {
+  font-family: "Pontano Sans";
+}
+h3 {
+  font-family: "Pontano Sans";
+  font-size: 150%;
+  font-weight: normal;
+  color: #D00000;
+}
