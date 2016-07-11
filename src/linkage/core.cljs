@@ -87,25 +87,26 @@
   a default value from params$, and to be passed to update-params!.  It will also 
   be converted to a string an set as the id and name properties of the input 
   element."
-  [k params$ size label]
-  (let [id (name k)]
-    [:span {:id (str id "-div")}
-     [:text (str "    " label ": ") ]
-     [:input {:id id
-              :name id
-              :type "text"
-              :size size
-              :defaultValue (k @params$)
-              :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
-     ]))
+  ([k params$ size label] (float-input k params$ size label (name k)))
+  ([k params$ size label var-label]
+   (let [id (name k)]
+     [:span {:id (str id "-div")}
+      [:text " " label " " [:em var-label] ": "]
+      [:input {:id id
+               :name id
+               :type "text"
+               :size size
+               :defaultValue (k @params$)
+               :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
+      ])))
 
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id chart-params$]
   [:form 
-   [float-input :s chart-params$ 5 "selection coeff s"]
-   [float-input :h chart-params$ 5 "heterozygote coeff h"]
-   [float-input :max-r chart-params$ 5 "max recomb prob r"]
+   [float-input :s chart-params$ 5 "selection coeff"]
+   [float-input :h chart-params$ 5 "heterozygote coeff"]
+   [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
    [:text "  "] ; add space before button
    [:button {:type "button" :on-click #(make-chart svg-id chart-params$)}
     "re-plot"]])
