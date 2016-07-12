@@ -5,7 +5,7 @@
 ;; the file LICENSE.
 
 (ns linkage.core
-    (:require [reagent.core :as r :refer [atom]]
+    (:require [reagent.core :as r]
               [reagent.session :as session]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
