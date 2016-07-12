@@ -109,7 +109,7 @@
    [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
    [:text "  "] ; add space before button
    [:button {:type "button" :on-click #(make-chart svg-id chart-params$)}
-    "re-plot"]])
+    "re-run"]])
 
 (defn head []
   [:head
@@ -120,8 +120,9 @@
   "Set up main page (except for chart, which is made elsewhere)."
   (head)
   [:div
-   [:h3 "Effect of selection on a linked neutral locus" [:br]
-     "cf. Gillespie's " [:em "Concise Guide"] " 2nd ed., section 4.2."]
+   [:h3 "Effect of selection on a linked neutral locus"]
+   [:h2 "See Gillespie's " [:em "Population Genetics: A Concise Guide"] 
+    " 2nd ed., section 4.2., and the file TwoLocusGillespie42.md."]
    [:text "Marshall Abrams (© 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id "chart-svg" :height "400px"}] ; FIXME height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
