@@ -71,7 +71,7 @@
         (.axisLabel "r/s")
         (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
     (-> chart.yAxis
-        (.axisLabel "final/init heteterozygosity at B locus")
+        (.axisLabel "final/init heteterozygosity at the linked neutral locus")
         (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
     ;; add chart to dom using d3:
     (.. js/d3
