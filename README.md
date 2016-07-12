@@ -40,6 +40,14 @@ Javascript NVD3, a charting library built on the Javascript library
 D3.js.  (These are Javascript libraries, but it's easy to call
 Javascript functions from Clojurescript code.)
 
+At present, I'm not using the full capabilities of Reagent, because it
+wouldn't make sense to re-run a bunch of multi-generation simulations
+immediately when the user changes a parameter.
+
+To compile the source code, you'll need working installations of
+Clojure, Clojurescript, and Leiningen.  The project is set up to use
+Figwheel for iterative compilation, etc. during the development process.
+
 ## Setup
 
 Notes from the original figwheel README.md:
