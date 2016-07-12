@@ -104,8 +104,13 @@
   "Create button that will cause the chart to be re-plotted with new 
   parameters."
   [svg-id chart-params]
+  ;; If uncomment next line, typing in any of the form inputs will
+  ;; cause the chart to be remade.  This is tricky, since you can
+  ;; temporarily have a parameter that makes no sense and might cause
+  ;; and infinite loop.
+  ;(make-chart svg-id chart-params)
    [:button {:type "button" :on-click #(make-chart svg-id chart-params)}
-    "re-plot " (interpose ", " (vals chart-params))])
+    "re-plot " (interpose ", " (vals chart-params))]) ; re-renders button with new params
 
 
 (defn plot-params-form
