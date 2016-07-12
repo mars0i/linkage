@@ -27,7 +27,8 @@ specify *h*, which specifies where in between the fitnesses of the two
 homozygotes the fitness of the heterozygote lies.  This model does
 not have a say of specifying overdominance or underdominance.
 
-Thus *r*, *s*, and *h* must all lie between 0 and 1. 
+*r*, *s*, must be greater than 0 and less than or equal to 1, i.e. in
+(0,1].  *h* must between 0 and 1, inclusive, i.e. in [0,1].
 
 Since the simulation runs many times, for many generations, it can
 take a few seconds to regenerate the plot, especially on a slow
