@@ -121,11 +121,11 @@
   (head)
   [:div
    [:h3 "Effect of selection on a linked neutral locus" [:br]
-        "(Based on Gillespie's "
-    [:em "Concise Guide"] " 2nd ed., section 4.2.)"]
+    [:a {:href "doc/TwoLocusGillespie42.md"}
+     "cf. Gillespie's " [:em "Concise Guide"] " 2nd ed., section 4.2."]]
    [:text "Marshall Abrams (© 2016, GPL v.3)"]
    [:div {:id "chart-div"}
-    [:svg {:id "chart-svg" :height "400px"}] ; height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
+    [:svg {:id "chart-svg" :height "400px"}] ; FIXME height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
     [plot-params-form chart-svg-id chart-params$]]])
 
 (defn home-did-mount [this]
