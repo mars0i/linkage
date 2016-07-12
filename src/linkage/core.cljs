@@ -31,16 +31,16 @@
               het-rats))))      ; but we want to display it using r/s
 
 ;; Note: I name atoms with terminal $ .
-(defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
+(defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5}))
 ;; not currently using ratom capabilities, so use a regular Clojure atom
 
 (defn update-params! [params$ k v]
   "Update params$ with value v for key k."
   (swap! params$ assoc k v))
 
-(defn make-chart-config [chart-params$]
+(defn make-chart-config [chart-params]
   "Make NVD3 chart configuration data object."
-  (let [{:keys [max-r s h]} @chart-params$]
+  (let [{:keys [max-r s h]} chart-params]
     (clj->js
       [{:values (het-rat-coords max-r s h)
         :key "het-rat" 
@@ -51,10 +51,11 @@
 
 (def chart-svg-id "#chart-svg")
 
-(defn make-chart [svg-id chart-params$]
-  "Create an NVD3 line chart with configuration parameters in @chart-params$
-  and attach it to SVG object with id svg-id."
-  (let [s (:s @chart-params$)
+(defn make-chart
+  "Create an NVD3 line chart with configuration parameters in Clojure map
+  chart-params, and attach the chart to SVG object with id svg-id."
+  [svg-id chart-params]
+  (let [s (:s chart-params)
         chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
     (-> chart
@@ -76,9 +77,8 @@
     ;; add chart to dom using d3:
     (.. js/d3
         (select svg-id)
-        (datum (make-chart-config chart-params$))
-        (call chart)))) 
-     ;; in nvd3 examples, we return also chart, but not needed here
+        (datum (make-chart-config chart-params))
+        (call chart)))) ;; in nvd3 examples, we return also chart, but not needed here
 
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
 ;; dropdowns to a function that set a single global var for each.
@@ -97,19 +97,26 @@
                :type "text"
                :size size
                :defaultValue (k @params$)
-               :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
-      ])))
+               :on-change #(update-params! params$ k
+                                           (js/parseFloat
+                                             (-> % .-target .-value)))}]])))
+(defn plot-it-button
+  "Create button that will cause the chart to be re-plotted with new 
+  parameters."
+  [svg-id chart-params]
+   [:button {:type "button" :on-click #(make-chart svg-id chart-params)}
+    "re-plot " (interpose ", " (vals chart-params))])
+
 
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
-  [svg-id chart-params$]
+  [svg-id params$]
   [:form 
-   [float-input :s chart-params$ 5 "selection coeff"]
-   [float-input :h chart-params$ 5 "heterozygote coeff"]
-   [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
+   [float-input :s params$ 5 "selection coeff"]
+   [float-input :h params$ 5 "heterozygote coeff"]
+   [float-input :max-r params$ 5 "max recomb prob" [:em "r"]]
    [:text "  "] ; add space before button
-   [:button {:type "button" :on-click #(make-chart svg-id chart-params$)}
-    "re-plot"]])
+   [plot-it-button svg-id @params$]])
 
 (defn head []
   [:head
@@ -130,7 +137,7 @@
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
-  (make-chart chart-svg-id chart-params$))
+  (make-chart chart-svg-id @chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
