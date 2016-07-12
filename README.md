@@ -12,6 +12,7 @@ nvd3 plot of the results, following the material in John Gillespie's
 University Press 2004, section 4.2, as described in Problem 4.3.  Also
 note Gillespie's Python implementation at the end of the chapter
 (which has a mistake in one line, btw--perhaps intentionally?).
+[This page](doc/TwoLocusGillespie42.md) has more information.
 
 ## License
 
@@ -24,6 +25,20 @@ released under a different license.  (For example, some of the source
 files were created automatically by running 'lein new reagent ...', and
 may be under a different license if I haven't modified them much.)
 
+## General remarks on code
+
+The experiments are written in Clojurescript, a dialect of Clojure.
+Clojurescript code is compiled into Javascript code by the Clojurescript
+compile, and then (maybe) further compiled into more efficient
+Javascript by the Google Clojure compiler.  So what is actually running
+in your browser is Javascript code, but the source code here looks like
+Clojure (because it is).
+
+I also use the Reagent Clojurescript library (a wrapper around
+React.js), to generate and update HTML programmatically.  I'm using
+Javascript NVD3, a charting library built on the Javascript library
+D3.js.  (These are Javascript libraries, but it's easy to call
+Javascript functions from Clojurescript code.)
 
 ## Setup
 
