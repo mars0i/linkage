@@ -120,7 +120,7 @@
   "Set up main page (except for chart, which is made elsewhere)."
   (head)
   [:div
-   [:h3 "Effect of selection on a linked neutral locus"]
+   [:h3 "Simulations: effect of selection on a linked neutral locus"]
    [:h2 "See Gillespie's " [:em "Population Genetics: A Concise Guide"] 
     " 2nd ed., section 4.2., and the file TwoLocusGillespie42.md."]
    [:text "Marshall Abrams (© 2016, GPL v.3)"]
