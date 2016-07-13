@@ -23,6 +23,8 @@
 
 ;; How many simulations to run--i.e. how many recombination rate r values?
 (def num-sims 50)
+(def svg-height 400)
+(def svg-width 600)
 
 (defn het-rat-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
@@ -62,8 +64,8 @@
         chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
     (-> chart
-        (.height 400)
-        (.width 600)
+        (.height svg-height)
+        (.width svg-width)
         ;(.margin {:left 100}) ; what does this do?
         (.useInteractiveGuideline true)
         (.duration 200) ; how long is gradual transition from old to new plot
@@ -74,7 +76,7 @@
         (.forceY (clj->js [0,1]))) ; force y-axis to go to 1 even if data doesn't
     (-> chart.xAxis
         (.axisLabel "r/s")
-        (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
+        (.tickFormat (fn [d] (pp/cl-format nil "~,3f" d))))
     (-> chart.yAxis
         (.axisLabel "final/init heteterozygosity at the linked neutral locus")
         (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
@@ -130,7 +132,7 @@
     " 2nd ed., section 4.2., and the file TwoLocusGillespie42.md ."]
    [:text "Marshall Abrams (© 2016, GPL v.3)"]
    [:div {:id "chart-div"}
-    [:svg {:id "chart-svg" :height "400px"}] ; FIXME height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
+    [:svg {:id "chart-svg" :height (str svg-height "px")}]
     [plot-params-form chart-svg-id chart-params$]]])
 
 (defn home-did-mount [this]
