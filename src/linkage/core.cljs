@@ -27,6 +27,13 @@
 (def svg-width 600)
 (def button-color "white")
 
+(defonce is-running-text$ (r/atom ""))
+
+;; Default simulation parameters
+;; note: I name atoms with a terminal $ .
+(defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
+;; not currently using ratom capabilities, so use a regular Clojure atom
+
 (defn het-rat-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
@@ -35,11 +42,6 @@
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
               het-rats))))      ; but we want to display it using r/s
-
-;; Default simulation parameters
-;; note: I name atoms with a terminal $ .
-(defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
-;; not currently using ratom capabilities, so use a regular Clojure atom
 
 (defn update-params! [params$ k v]
   "Update params$ with value v for key k."
@@ -134,7 +136,9 @@
                           ;(reset! color$ color2)
                           ;(reset! label$ label2)
                           ;(reset! color$ color1)
+                          ; (reset! is-running-text$ "running...")
                           (make-chart svg-id chart-params$)
+                          ;(reset! is-running-text$ "")
                           ;(reset! color$ color1)
                           ;(reset! button-label$ label1)
                           )
@@ -149,7 +153,8 @@
    [float-input :h chart-params$ 5 "heterozygote coeff"]
    [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
    [:text "  "] ; add space before button
-   [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]])
+   [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"] ; doesn't really work
+   [:text " yow! " @is-running-text$]]) ; also doesn't work.
 
 (defn head []
   [:head
