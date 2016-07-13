@@ -111,19 +111,14 @@
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id chart-params$]
-  (let [sims-running-text$ (atom "")]
-    [:form 
-     [float-input :s chart-params$ 5 "selection coeff"]
-     [float-input :h chart-params$ 5 "heterozygote coeff"]
-     [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
-     [:text "  "] ; add space before button
-     [:button {:type "button" 
-               :on-click (fn [] 
-                           (reset! sims-running-text$ "running...")
-                           (make-chart svg-id chart-params$)
-                           (reset! sims-running-text$ ""))}
-      "re-run"]
-     [:text @sims-running-text$]]))
+  [:form 
+   [float-input :s chart-params$ 5 "selection coeff"]
+   [float-input :h chart-params$ 5 "heterozygote coeff"]
+   [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
+   [:text "  "] ; add space before button
+   [:button {:type "button" 
+             :on-click (fn [] (make-chart svg-id chart-params$))}
+    "re-run"]])
 
 (defn head []
   [:head
