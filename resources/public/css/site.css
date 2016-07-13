@@ -19,3 +19,7 @@ h2 {
   font-weight: normal;
   color: #C04040;
 }
+.button {
+  border-radius: 10px
+  border: 0px
+}

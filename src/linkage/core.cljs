@@ -120,34 +120,36 @@
 ;             :on-click (fn [] (make-chart svg-id chart-params$))}
 ;    "re-run"]])
 
+(defn chart-button
+  [svg-id label1 label2 color1 color2]
+  (let [label$ (r/atom label1)
+        color$ (r/atom color1)]
+    [:button {:type "button" 
+              ;:style {:background-color @color$}
+              ;:on-mouse-down #(reset! color$ color2)
+              ;:on-mouse-up   #(reset! color$ color1)
+              ;:on-mouse-down #(reset! label$ label2)
+              ;:on-mouse-up #(reset! label$ label1)
+              :on-click (fn []
+                          ;(reset! color$ color2)
+                          ;(reset! label$ label2)
+                          ;(reset! color$ color1)
+                          (make-chart svg-id chart-params$)
+                          ;(reset! color$ color1)
+                          ;(reset! button-label$ label1)
+                          )
+              }
+     @label$]))
 
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id chart-params$]
-  (let [default-button-color "#FFFFFF"
-        button-color$ (r/atom default-button-color)
-        button-label$ (r/atom "re-run")]
-    [:form 
-     [float-input :s chart-params$ 5 "selection coeff"]
-     [float-input :h chart-params$ 5 "heterozygote coeff"]
-     [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
-     [:text "  "] ; add space before button
-     [:button {:type "button" 
-               :style {:background @button-color$}
-               ;:on-mouse-down #(reset! button-color$ "#606060")
-               ;:on-mouse-up   #(reset! button-color$ default-button-color)
-               ;:on-mouse-down #(reset! button-label$ "running..." )
-               ;:on-mouse-up #(reset! button-label$ "re-run")
-               :on-click (fn []
-                           (reset! button-color$ "#606060")
-                           ;(reset! button-label$ "running..." )
-                           ;(reset! button-color$ default-button-color)
-                           (make-chart svg-id chart-params$)
-                           (reset! button-color$ default-button-color)
-                           ;(reset! button-label$ "re-run")
-                         )
-              }
-      @button-label$]]))
+  [:form 
+   [float-input :s chart-params$ 5 "selection coeff"]
+   [float-input :h chart-params$ 5 "heterozygote coeff"]
+   [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
+   [:text "  "] ; add space before button
+   [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]])
 
 (defn head []
   [:head
