@@ -22,9 +22,10 @@
 ;; app code
 
 ;; How many simulations to run--i.e. how many recombination rate r values?
-(def num-sims 50)
+(def num-sims 25)
 (def svg-height 400)
 (def svg-width 600)
+(def button-color "white")
 
 (defn het-rat-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
@@ -110,13 +111,30 @@
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id chart-params$]
-  [:form 
-   [float-input :s chart-params$ 5 "selection coeff"]
-   [float-input :h chart-params$ 5 "heterozygote coeff"]
-   [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
-   [:text "  "] ; add space before button
-   [:button {:type "button" :on-click #(make-chart svg-id chart-params$)}
-    "re-run"]])
+  (let [default-button-color "white"
+        button-color$ (atom default-button-color)
+        button-label$ (atom "re-run")]
+    (reset! button-color$ "#F0A0A0")
+    [:form 
+     [float-input :s chart-params$ 5 "selection coeff"]
+     [float-input :h chart-params$ 5 "heterozygote coeff"]
+     [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
+     [:text "  "] ; add space before button
+     [:button {:type "button" 
+               :style {:background @button-color$}
+               ;; I'm trying to change button to a readable "running ..."
+               ;; while the sim is running.
+               ;:on-mouse-down #(reset! button-color$ "#606060")
+               ;:on-mouse-up   #(reset! button-color$ default-button-color)
+               :on-click (fn []
+                           ;(reset! button-color$ "#606060")
+                           ;(reset! button-label$ "running..." )
+                           ;(reset! button-color$ default-button-color)
+                           (make-chart svg-id chart-params$)
+                           ;(reset! button-label$ "re-run")
+                         )
+              }
+      @button-label$]]))
 
 (defn head []
   [:head
