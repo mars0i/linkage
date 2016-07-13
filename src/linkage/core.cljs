@@ -111,30 +111,19 @@
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id chart-params$]
-  (let [default-button-color "white"
-        button-color$ (atom default-button-color)
-        button-label$ (atom "re-run")]
-    (reset! button-color$ "#F0A0A0")
+  (let [sims-running-text$ (atom "")]
     [:form 
      [float-input :s chart-params$ 5 "selection coeff"]
      [float-input :h chart-params$ 5 "heterozygote coeff"]
      [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
      [:text "  "] ; add space before button
      [:button {:type "button" 
-               :style {:background @button-color$}
-               ;; I'm trying to change button to a readable "running ..."
-               ;; while the sim is running.
-               ;:on-mouse-down #(reset! button-color$ "#606060")
-               ;:on-mouse-up   #(reset! button-color$ default-button-color)
-               :on-click (fn []
-                           ;(reset! button-color$ "#606060")
-                           ;(reset! button-label$ "running..." )
-                           ;(reset! button-color$ default-button-color)
+               :on-click (fn [] 
+                           (reset! sims-running-text$ "running...")
                            (make-chart svg-id chart-params$)
-                           ;(reset! button-label$ "re-run")
-                         )
-              }
-      @button-label$]]))
+                           (reset! sims-running-text$ ""))}
+      "re-run"]
+     [:text @sims-running-text$]]))
 
 (defn head []
   [:head
