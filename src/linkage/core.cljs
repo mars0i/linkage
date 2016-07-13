@@ -21,16 +21,20 @@
 ;; -------------------------
 ;; app code
 
+;; How many simulations to run--i.e. how many recombination rate r values?
+(def num-sims 50)
+
 (defn het-rat-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
-  (let [rs (range 0.000 (+ max-r 0.00001) 0.0001)
+  (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r 200))
         het-rats (map #(two/B-het-ratio % s h) rs)]
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
               het-rats))))      ; but we want to display it using r/s
 
-;; Note: I name atoms with terminal $ .
+;; Default simulation parameters
+;; note: I name atoms with a terminal $ .
 (defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
 ;; not currently using ratom capabilities, so use a regular Clojure atom
 
@@ -62,11 +66,12 @@
         (.width 600)
         ;(.margin {:left 100}) ; what does this do?
         (.useInteractiveGuideline true)
-        (.duration 300) ; I have no idea what this is
+        (.duration 200) ; how long is gradual transition from old to new plot
         (.pointSize 1)
-        (.showLegend false) ; true is useful if for multiple lines on same plot
+        (.showLegend false) ; true is useful for multiple lines on same plot
+        (.showXAxis true)
         (.showYAxis true)
-        (.showXAxis true))
+        (.forceY (clj->js [0,1]))) ; force y-axis to go to 1 even if data doesn't
     (-> chart.xAxis
         (.axisLabel "r/s")
         (.tickFormat (fn [d] (pp/cl-format nil "~,2f" d))))
@@ -122,7 +127,7 @@
   [:div
    [:h3 "Simulations: effect of selection on a linked neutral locus"]
    [:h2 "See Gillespie's " [:em "Population Genetics: A Concise Guide"] 
-    " 2nd ed., section 4.2., and the file TwoLocusGillespie42.md."]
+    " 2nd ed., section 4.2., and the file TwoLocusGillespie42.md ."]
    [:text "Marshall Abrams (© 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id "chart-svg" :height "400px"}] ; FIXME height will be overridden by NVD3, but we need it here so Reagent knows where to put the next div
