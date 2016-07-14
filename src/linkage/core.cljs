@@ -10,6 +10,7 @@
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
               [cljs.pprint :as pp]
+              [goog.string :as gstr]
               [cljsjs.d3]
               [cljsjs.nvd3]
               [linkage.two-locus :as two]))
@@ -26,6 +27,9 @@
 (def svg-height 400)
 (def svg-width 600)
 (def button-color "white")
+(def chart-svg-id "chart-svg")
+
+(def copyright-sym (gstr/unescapeEntities "&copy;")) 
 
 (defonce is-running-text$ (r/atom ""))
 
@@ -34,14 +38,14 @@
 (defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
 ;; not currently using ratom capabilities, so use a regular Clojure atom
 
-(defn het-rat-coords [max-r s h]
+(defn het-ratio-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
   (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r 50))
-        het-rats (map #(two/B-het-ratio % s h) rs)]
+        het-ratios (map #(two/B-het-ratio % s h) rs)]
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
-              het-rats))))      ; but we want to display it using r/s
+              het-ratios))))      ; but we want to display it using r/s
 
 (defn update-params! [params$ k v]
   "Update params$ with value v for key k."
@@ -51,14 +55,12 @@
   "Make NVD3 chart configuration data object."
   (let [{:keys [max-r s h]} @chart-params$]
     (clj->js
-      [{:values (het-rat-coords max-r s h)
-        :key "het-rat" 
+      [{:values (het-ratio-coords max-r s h)
+        :key "het-ratios" 
         :color "#0000ff" 
         ;:strokeWidth 1 
         :area false
         :fillOpacity -1}])))
-
-(def chart-svg-id "#chart-svg")
 
 (defn make-chart [svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
@@ -168,26 +170,18 @@
    [:h3 "Simulations: effect of selection on a linked neutral locus"]
    [:h2 "See Gillespie's " [:em "Population Genetics: A Concise Guide"] 
     " 2nd ed., section 4.2., and the file TwoLocusGillespie42.md ."]
-   [:text "Marshall Abrams (© 2016, GPL v.3)"]
+   [:text "Marshall Abrams (" copyright-sym " 2016, GPL v.3)"]
    [:div {:id "chart-div"}
-    [:svg {:id "chart-svg" :height (str svg-height "px")}]
-    [plot-params-form chart-svg-id chart-params$]]])
+    [:svg {:id chart-svg-id :height (str svg-height "px")}]
+    [plot-params-form (str "#" chart-svg-id) chart-params$]]])
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
-  (make-chart chart-svg-id chart-params$))
+  (make-chart (str "#" chart-svg-id) chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
                    :component-did-mount home-did-mount}))
-
-;; broken:
-;(defn current-page []
-;  [:div [(session/get :current-page)]])
-
-; broken:
-;(secretary/defroute "/" []
-;  (session/put! :current-page #'home-page))
 
 ;; -------------------------
 ;; Initialize app
