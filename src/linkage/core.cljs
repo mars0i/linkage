@@ -65,7 +65,7 @@
 (defn make-chart [svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
-  (println "making chart")(flush)
+  ;(reset! is-running-text$ "running...")
   (let [s (:s @chart-params$)
         chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
@@ -91,7 +91,7 @@
         (select svg-id)
         (datum (make-chart-config chart-params$))
         (call chart))
-    (println "made chart")(flush)
+    ;(reset! is-running-text$ "")
     chart)) 
      ;; in nvd3 examples, we return also chart, but not needed here
 
@@ -115,18 +115,6 @@
                :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
       ])))
 
-;(defn plot-params-form
-;  "Create form to allow changing model parameters and creating a new chart."
-;  [svg-id chart-params$]
-;  [:form 
-;   [float-input :s chart-params$ 5 "selection coeff"]
-;   [float-input :h chart-params$ 5 "heterozygote coeff"]
-;   [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
-;   [:text "  "] ; add space before button
-;   [:button {:type "button" 
-;             :on-click (fn [] (make-chart svg-id chart-params$))}
-;    "re-run"]])
-
 (defn chart-button
   [svg-id label1 label2 color1 color2]
   (let [label$ (r/atom label1)
@@ -141,11 +129,14 @@
                           ;(reset! color$ color2)
                           ;(reset! label$ label2)
                           ;(reset! color$ color1)
+                          (println "about to reset")(flush)
                           (reset! is-running-text$ "running...")
+                          ;(r/force-update-all)
                           (println "about to make chart")(flush)
                           (make-chart svg-id chart-params$)
                           (println "done making chart")(flush)
-                          (reset! is-running-text$ "")
+                          ;(reset! is-running-text$ "")
+                          ;(println "just re-reset")(flush)
                           ;(reset! color$ color1)
                           ;(reset! button-label$ label1)
                           )
