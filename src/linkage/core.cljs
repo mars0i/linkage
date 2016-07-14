@@ -37,7 +37,7 @@
 (defn het-rat-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
-  (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r 200))
+  (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r 50))
         het-rats (map #(two/B-het-ratio % s h) rs)]
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
