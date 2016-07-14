@@ -23,7 +23,7 @@
 ;; app code
 
 ;; How many simulations to run--i.e. how many recombination rate r values?
-(def num-sims 25)
+(def num-sims 100)
 (def svg-height 400)
 (def svg-width 600)
 (def button-color "white")
@@ -41,7 +41,7 @@
 (defn het-ratio-coords [max-r s h]
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
-  (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r 50))
+  (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r num-sims))
         het-ratios (map #(two/B-het-ratio % s h) rs)]
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
@@ -65,6 +65,7 @@
 (defn make-chart [svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
+  (println "making chart")(flush)
   (let [s (:s @chart-params$)
         chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
@@ -89,7 +90,9 @@
     (.. js/d3
         (select svg-id)
         (datum (make-chart-config chart-params$))
-        (call chart)))) 
+        (call chart))
+    (println "made chart")(flush)
+    chart)) 
      ;; in nvd3 examples, we return also chart, but not needed here
 
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
@@ -138,9 +141,11 @@
                           ;(reset! color$ color2)
                           ;(reset! label$ label2)
                           ;(reset! color$ color1)
-                          ; (reset! is-running-text$ "running...")
+                          (reset! is-running-text$ "running...")
+                          (println "about to make chart")(flush)
                           (make-chart svg-id chart-params$)
-                          ;(reset! is-running-text$ "")
+                          (println "done making chart")(flush)
+                          (reset! is-running-text$ "")
                           ;(reset! color$ color1)
                           ;(reset! button-label$ label1)
                           )
