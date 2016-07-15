@@ -120,6 +120,7 @@
   (let [label$ (r/atom label1)
         color$ (r/atom color1)]
     [:button {:type "button" 
+              :id "yo-button"
               ;:style {:background-color @color$}
               ;:on-mouse-down #(reset! color$ color2)
               ;:on-mouse-up   #(reset! color$ color1)
@@ -128,17 +129,23 @@
               :on-click (fn []
                           ;(reset! color$ color2)
                           ;(reset! label$ label2)
-                          ;(reset! color$ color1)
-                          (println "about to reset")(flush)
-                          (reset! is-running-text$ "running...")
+                          ;(js/setTimeout (fn [] (reset! label$ label2) 10))
+                          ;(js/setTimeout (fn [] (reset! is-running-text$ label2) 1))
+                          ;(println @label$)
                           ;(r/force-update-all)
-                          (println "about to make chart")(flush)
+                          ;(reset! color$ color1)
+                          ;(println "about to reset")(flush)
+                          ;(reset! is-running-text$ "running...")
+                          ;(r/force-update-all)
+                          ;(println "about to make chart")(flush)
                           (make-chart svg-id chart-params$)
-                          (println "done making chart")(flush)
+                          ;(println "done making chart")(flush)
                           ;(reset! is-running-text$ "")
                           ;(println "just re-reset")(flush)
                           ;(reset! color$ color1)
-                          ;(reset! button-label$ label1)
+                          ;(reset! label$ label1)
+                          ;(reset! is-running-text$ "")
+                          ;(println @label$)
                           )
               }
      @label$]))
@@ -152,7 +159,7 @@
    [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
    [:text "  "] ; add space before button
    [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"] ; doesn't really work
-   [:text " yow! " @is-running-text$]]) ; also doesn't work.
+   [:text @is-running-text$]]) ; also doesn't work.
 
 (defn head []
   [:head
