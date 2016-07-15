@@ -10,7 +10,7 @@
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
               [cljs.pprint :as pp]
-              [goog.string :as gstr]
+              [goog.string]
               [cljsjs.d3]
               [cljsjs.nvd3]
               [linkage.two-locus :as two]))
@@ -29,7 +29,7 @@
 (def button-color "white")
 (def chart-svg-id "chart-svg")
 
-(def copyright-sym (gstr/unescapeEntities "&copy;")) 
+(def copyright-sym (goog.string/unescapeEntities "&copy;")) 
 
 (defonce is-running-text$ (r/atom ""))
 
