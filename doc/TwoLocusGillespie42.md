@@ -25,21 +25,37 @@ homozygous for allele *A*<sub>1</sub> and the fitness 1-*s* of an
 organism that's homozygous for *A*<sub>2</sub>.    You can also
 specify *h*, which specifies where in between the fitnesses of the two 
 homozygotes the fitness of the heterozygote lies.  This model does
-not have a say of specifying overdominance or underdominance.
+not have a way of specifying overdominance or underdominance: The
+fitness of heterozygotes must be intermediate between the higher and
+lower fitness homozygotes.
 
-*r*, *s*, must be greater than 0 and less than or equal to 1, i.e. in
-(0,1].  *h* must between 0 and 1, inclusive, i.e. in [0,1].
+Finally, you can specify the initial haplotype frequencies
+*x*<sub>1</sub>, *x*<sub>2</sub>, and *x*<sub>3</sub>:
+
+* *x*<sub>1</sub> is the frequency of the *A*<sub>1</sub>*B*<sub>1</sub> haplotype.
+* *x*<sub>2</sub> is the frequency of the *A*<sub>1</sub>*B*<sub>2</sub> haplotype.
+* *x*<sub>3</sub> is the frequency of the *A*<sub>2</sub>*B*<sub>1</sub> haplotype.
+* *x*<sub>4</sub>, the frequency of the *A*<sub>2</sub>*B*<sub>2</sub>
+haplotype, will be calculated as 1 - (*x*<sub>1</sub> + *x*<sub>2</sub> +
+*x*<sub>3</sub>).
+
+Warning: You must specify *r*, *s* to be greater than 0 and less than
+or equal to 1, i.e. in (0,1], and *h* must between 0 and 1, inclusive, i.e.
+in [0,1].  Also, *x*<sub>1</sub>, *x*<sub>2</sub>, and *x*<sub>3</sub> must
+each be greater than or equal to 0, and must sum to less than or equal to 1.
+Violation of these rules will produce nonsensical results or throw
+the simulation into an infinite loop.
 
 Since the simulation runs many times, for many generations, it can
 take a few seconds to regenerate the plot, especially on a slow
-computer.  The number of simulations that get run depends on the
-values of *s* and the maximum for *r*.  If *s* is small and the max
-for *r* is large, you may have to wait a bit.  Some browsers, such as
-Firefox, may pop up a warning message about (e.g.) an "unresponsive
-script". Unless you've done something forbidden with the parameters
-you specified, though, the simulations are just taking a long time to
-run. If you don't like this message in Firefox, you can use a
-different browser or [turn off the timeout
+computer. The number of simulations that get run depends on the values
+of *s* and the maximum for *r*.  If *s* is small, you may have to wait
+a bit.  Some browsers, such as Firefox, may pop up a warning message
+about (e.g.) an "unresponsive script". Unless you've done something
+forbidden with the parameters you specified, though, the simulations
+are just taking a long time to run, and you can just tell Firefox to
+let the script run.  If you don't like this message in Firefox, you
+can use a different browser or [turn off the timeout
 function](https://support.mozilla.org/en-US/kb/warning-unresponsive-script).
 
 
