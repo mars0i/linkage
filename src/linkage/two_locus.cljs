@@ -84,7 +84,7 @@
   "Given a sequence of haplotypes x1, x2, x3, returns the heterozygosity
   at the B locus."
   [[x1 _ x3]]
-  (let [p2 (+ x1 x3)]
+  (let [p2 (+ x1 x3)]    ; freq of B1
     (* 2 p2 (- 1 p2))))
 
 (defn B-het-ratio-at-p1-threshold
