@@ -60,7 +60,7 @@
   (let [{:keys [max-r s h x1 x2 x3]} @chart-params$]
     (clj->js
       [{:values (het-ratio-coords max-r s h x1 x2 x3)
-        :key "het-ratios" 
+        :key "het-ratio" 
         :color "#0000ff" 
         ;:strokeWidth 1 
         :area false
