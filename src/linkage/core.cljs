@@ -155,24 +155,37 @@
               }
      @label$]))
 
+(defn space2 [] [:text nbsp nbsp])
+(defn space3 [] [:text nbsp nbsp nbsp])
+(defn space4 [] [:text nbsp nbsp nbsp nbsp])
+(defn space5 [] [:text nbsp nbsp nbsp nbsp nbsp])
+
+(defn float-text
+  "Display a number with a label so that size is similar to float inputs."
+  [n & label]
+  (vec (concat [:text] label [": "]
+               (list [:span {:style {:font-size "12px"}} 
+                      (pp/cl-format nil "~,4f" n)]))))
+
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id params$]
-  [:form 
-   [float-input :s params$ 5 "selection coeff"]
-   [float-input :h params$ 5 "heterozygote coeff"]
-   [float-input :max-r params$ 5 "max recomb prob" [:em "r"]]
-   [:text @is-running-text$] ; also doesn't work.
-   [:br]
-   [float-input :x1 params$ 5 "" [:em "x"] [:sub 1]]
-   [float-input :x2 params$ 5 "" [:em "x"] [:sub 2]]
-   [float-input :x3 params$ 5 "" [:em "x"] [:sub 3]]
-   [:text nbsp nbsp nbsp [:em "x"] [:sub 4] ": "
-    [:span {:style {:font-size "12px"}}
-    (let [{:keys [x1 x2 x3]} @params$]
-      (pp/cl-format nil "~,4f" (- 1 x1 x2 x3)))]]
-   [:text nbsp nbsp nbsp nbsp]
-   [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]]) ; text, color changes don't work
+  (let [{:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
+    [:form 
+     [float-input :s params$ 5 "selection coeff"]
+     [float-input :h params$ 5 "heterozygote coeff"]
+     [float-input :max-r params$ 5 "max recomb prob" [:em "r"]]
+     [:text @is-running-text$] ; also doesn't work.
+     [:br]
+     [float-input :x1 params$ 5 "" [:em "x"] [:sub 1]]
+     [float-input :x2 params$ 5 "" [:em "x"] [:sub 2]]
+     [float-input :x3 params$ 5 "" [:em "x"] [:sub 3]]
+     (space4)
+     [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
+     (space4)
+     [float-text (two/B-het [x1 x2 x3]) "initial heterozygosity"]
+     (space2)
+     [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]])) ; text, color changes don't work
 
 (defn head []
   [:head
