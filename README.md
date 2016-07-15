@@ -29,24 +29,25 @@ may be under a different license if I haven't modified them much.)
 
 The experiments are written in Clojurescript, a dialect of Clojure.
 Clojurescript code is compiled into Javascript code by the Clojurescript
-compile, and then (maybe) further compiled into more efficient
+compiler, and then possibly further compiled into more efficient
 Javascript by the Google Clojure compiler.  So what is actually running
 in your browser is Javascript code, but the source code here looks like
-Clojure (because it is).
+Clojure--because it is.
 
-I also use the Reagent Clojurescript library (a wrapper around
-React.js), to generate and update HTML programmatically.  I'm using
-Javascript NVD3, a charting library built on the Javascript library
-D3.js.  (These are Javascript libraries, but it's easy to call
-Javascript functions from Clojurescript code.)
+I also use the Reagent Clojurescript library (a wrapper around the
+Javascript library React.js), to generate and update HTML
+programmatically and cause immediate updating of what's displayed in
+response to user input.
 
-At present, I'm not using the full capabilities of Reagent, because it
-wouldn't make sense to re-run a bunch of multi-generation simulations
-immediately when the user changes a parameter.
+In addition, I use NVD3, a Javascript charting library built on the
+Javascript library D3.js.  (It's easy to call Javascript functions from
+Clojurescript code.)  The charts here could be generated directly
+using D3, but it's easier with NVD3, and I end up with fancier charts
+than I'd write from scratch.  (Try mousing over the plot.)
 
-To compile the source code, you'll need working installations of
+To compile the source code, you'll need working installations of Java,
 Clojure, Clojurescript, and Leiningen.  The project is set up to use
-Figwheel for iterative compilation, etc. during the development process.
+Figwheel for iterative compilation during the development process.
 
 ## Setup
 
