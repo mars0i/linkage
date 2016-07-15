@@ -182,9 +182,9 @@
      [float-input :x3 params$ 5 "" [:em "x"] [:sub 3]]
      (space4)
      [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
-     (space4)
-     [float-text (two/B-het [x1 x2 x3]) "initial heterozygosity"]
-     (space2)
+     (space3)
+     [float-text (two/B-het [x1 x2 x3]) "initial neutral locus heterozygosity"]
+     [:br]
      [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]])) ; text, color changes don't work
 
 (defn head []
