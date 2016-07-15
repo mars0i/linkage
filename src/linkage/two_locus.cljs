@@ -81,7 +81,7 @@
                 freqs)))
 
 (defn B-het
-  "Given a triplet of haplotypes x1, x2, x3, returns the heterozygosity
+  "Given a sequence of haplotypes x1, x2, x3, returns the heterozygosity
   at the B locus."
   [[x1 _ x3]]
   (let [p2 (+ x1 x3)]
