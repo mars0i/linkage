@@ -32,6 +32,7 @@
 (def chart-svg-id "chart-svg")
 
 (def copyright-sym (goog.string/unescapeEntities "&copy;")) 
+(def nbsp (goog.string/unescapeEntities "&nbsp;")) 
 
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
@@ -107,17 +108,17 @@
   element.  This string will also be used as the name of the variable in the label,
   unless var-label is present, in which it will be used for that purpose."
   ([k params$ size label] (float-input k params$ size label [:em (name k)]))
-  ([k params$ size label var-label]
+  ([k params$ size label & var-label]
    (let [id (name k)]
      [:span {:id (str id "-div")}
-      [:text " " label " " var-label ": "]
+      (vec (concat [:text nbsp nbsp nbsp label " "] var-label [": "]))
       [:input {:id id
                :name id
                :type "text"
                :size size
                :defaultValue (k @params$)
-               :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
-      ])))
+               :on-change 
+               #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]])))
 
 (defn chart-button
   [svg-id label1 label2 color1 color2]
@@ -161,15 +162,16 @@
    [float-input :s chart-params$ 5 "selection coeff"]
    [float-input :h chart-params$ 5 "heterozygote coeff"]
    [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
-   [:text "  "] ; add space before button
-   [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"] ; doesn't really work
    [:text @is-running-text$] ; also doesn't work.
    [:br]
-   [float-input :x1 chart-params$ 5 "" ]
-   [float-input :x2 chart-params$ 5 ""]
-   [float-input :x3 chart-params$ 5 ""]
-   [:text " " [:em "x"] ": "
-    (let [{:keys [x1 x2 x3]} @chart-params$] (- 1 x1 x2 x3))]])
+   [float-input :x1 chart-params$ 5 "" [:em "x"] [:sub 1]]
+   [float-input :x2 chart-params$ 5 "" [:em "x"] [:sub 2]]
+   [float-input :x3 chart-params$ 5 "" [:em "x"] [:sub 3]]
+   [:text nbsp nbsp nbsp [:em "x"] [:sub 4] ": "
+    [:span {:style {:font-size "12px"}}
+    (let [{:keys [x1 x2 x3]} @chart-params$] (- 1 x1 x2 x3))]]
+   [:text nbsp nbsp nbsp nbsp]
+   [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]]) ; text, color changes don't work
 
 (defn head []
   [:head
