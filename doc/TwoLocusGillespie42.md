@@ -39,12 +39,13 @@ Finally, you can specify the initial haplotype frequencies
 haplotype, will be calculated as 1 - (*x*<sub>1</sub> + *x*<sub>2</sub> +
 *x*<sub>3</sub>).
 
-Warning: You must specify *r*, *s* to be greater than 0 and less than
-or equal to 1, i.e. in (0,1], and *h* must between 0 and 1, inclusive, i.e.
-in [0,1].  Also, *x*<sub>1</sub>, *x*<sub>2</sub>, and *x*<sub>3</sub> must
-each be greater than or equal to 0, and must sum to less than or equal to 1.
-Violation of these rules will produce nonsensical results or throw
-the simulation into an infinite loop.
+Warning: You must specify *r*, *s* to be greater than 0 and less than or
+equal to 1, i.e. in (0,1], and *h* must be strictly between 0 and 1,
+i.e.  in (0,1); full dominance or recessivity isn't allowed, nor is
+over- or underdominance.  Also, *x*<sub>1</sub>, *x*<sub>2</sub>, and
+*x*<sub>3</sub> must each be greater than or equal to 0, and must sum to
+less than or equal to 1.  Violation of these rules will produce
+nonsensical results or throw the simulation into an infinite loop.
 
 Since the simulation runs many times, for many generations, it can
 take a few seconds to regenerate the plot, especially on a slow
