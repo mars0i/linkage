@@ -19,6 +19,8 @@
 ;; crucial to use nv.d3.css instead of or from
 ;; resources/public/css/site.css.
 
+;; Note: I name atoms with a terminal $ .
+
 ;; -------------------------
 ;; app code
 
@@ -31,18 +33,19 @@
 
 (def copyright-sym (goog.string/unescapeEntities "&copy;")) 
 
+;; Default simulation parameters
+(defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
+                                :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
+
 (defonce is-running-text$ (r/atom ""))
 
-;; Default simulation parameters
-;; note: I name atoms with a terminal $ .
-(defonce chart-params$ (atom {:max-r 0.02 :s 0.1 :h 0.5}))
-;; not currently using ratom capabilities, so use a regular Clojure atom
 
-(defn het-ratio-coords [max-r s h]
+(defn het-ratio-coords
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
+ [max-r s h x1 x2 x3]
   (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r num-sims))
-        het-ratios (map #(two/B-het-ratio % s h) rs)]
+        het-ratios (map #(two/B-het-ratio % s h x1 x2 x3) rs)]
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
               het-ratios))))      ; but we want to display it using r/s
@@ -53,9 +56,9 @@
 
 (defn make-chart-config [chart-params$]
   "Make NVD3 chart configuration data object."
-  (let [{:keys [max-r s h]} @chart-params$]
+  (let [{:keys [max-r s h x1 x2 x3]} @chart-params$]
     (clj->js
-      [{:values (het-ratio-coords max-r s h)
+      [{:values (het-ratio-coords max-r s h x1 x2 x3)
         :key "het-ratios" 
         :color "#0000ff" 
         ;:strokeWidth 1 
@@ -101,12 +104,13 @@
   "Create a text input that accepts numbers.  k is keyword to be used to extract
   a default value from params$, and to be passed to update-params!.  It will also 
   be converted to a string an set as the id and name properties of the input 
-  element."
-  ([k params$ size label] (float-input k params$ size label (name k)))
+  element.  This string will also be used as the name of the variable in the label,
+  unless var-label is present, in which it will be used for that purpose."
+  ([k params$ size label] (float-input k params$ size label [:em (name k)]))
   ([k params$ size label var-label]
    (let [id (name k)]
      [:span {:id (str id "-div")}
-      [:text " " label " " [:em var-label] ": "]
+      [:text " " label " " var-label ": "]
       [:input {:id id
                :name id
                :type "text"
@@ -159,7 +163,13 @@
    [float-input :max-r chart-params$ 5 "max recomb prob" [:em "r"]]
    [:text "  "] ; add space before button
    [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"] ; doesn't really work
-   [:text @is-running-text$]]) ; also doesn't work.
+   [:text @is-running-text$] ; also doesn't work.
+   [:br]
+   [float-input :x1 chart-params$ 5 "" ]
+   [float-input :x2 chart-params$ 5 ""]
+   [float-input :x3 chart-params$ 5 ""]
+   [:text " " [:em "x"] ": "
+    (let [{:keys [x1 x2 x3]} @chart-params$] (- 1 x1 x2 x3))]])
 
 (defn head []
   [:head
