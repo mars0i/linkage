@@ -127,25 +127,21 @@
                                 (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
-(def label1 "RE-RUN")
-(def label2 "RUNNING...")
-(def label$ (r/atom label1))
-
-(defn yo []
-                          (reset! label$ label2)
-                          (js/setTimeout #(do 
-                                            (make-chart chart-svg-id chart-params$)
-                                            (reset! label$ label1))
-                                         10))
+(def label$ (r/atom "Re-run")) ; I have to define this out here??
 
 (defn chart-button
   [svg-id label1 label2]
-;  (let [label$ (r/atom label1)]
-    [:button {:type "button" 
-              :id "chart-button"
-              :on-click yo
-              }
-     @label$]);)
+  ;(let [label$ (r/atom label1)] ; local ratom doesn't update dom
+  ;(reset! label$ label1)        ; resetting global ratom doesn't work either
+  [:button {:type "button" 
+            :id "chart-button"
+            :on-click (fn []
+                        (reset! label$ label2)
+                        (js/setTimeout (fn [] ; trick: allow DOM to update before make-chart runs
+                                         (make-chart svg-id chart-params$)
+                                         (reset! label$ label1))
+                                       10))}
+   @label$]);)
 
 (defn float-text
   "Display a number with a label so that size is similar to float inputs."
@@ -162,7 +158,7 @@
      [float-input :s params$ 5 "selection coeff"]
      [float-input :h params$ 5 "heterozygote coeff"]
      [float-input :max-r params$ 5 "max recomb prob" [:em "r"]]
-     [spaces 5]
+     [spaces 4]
      [chart-button svg-id "re-run" "running..."]
      [:br]
      [float-input :x1 params$ 5 "" [:em "x"] [:sub 1]]
