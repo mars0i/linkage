@@ -99,6 +99,11 @@
     chart)) 
      ;; in nvd3 examples, we return also chart, but not needed here
 
+(defn spaces 
+  "Returns a text element containing n nbsp;'s."
+  [n]
+  (into [:text] (repeat n nbsp)))
+
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
 ;; dropdowns to a function that set a single global var for each.
 (defn float-input 
@@ -110,15 +115,17 @@
   ([k params$ size label] (float-input k params$ size label [:em (name k)]))
   ([k params$ size label & var-label]
    (let [id (name k)]
-     [:span {:id (str id "-div")}
-      (vec (concat [:text nbsp nbsp nbsp label " "] var-label [": "]))
+     [:span {:id (str id "-span")}
+      (vec (concat [:text label " "] var-label [" : "]))
       [:input {:id id
                :name id
                :type "text"
                :size size
                :defaultValue (k @params$)
                :on-change 
-               #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]])))
+               #(update-params! params$ k 
+                                (js/parseFloat (-> % .-target .-value)))}]
+      [spaces 4]])))
 
 (defn chart-button
   [svg-id label1 label2 color1 color2]
@@ -155,11 +162,6 @@
               }
      @label$]))
 
-(defn space2 [] [:text nbsp nbsp])
-(defn space3 [] [:text nbsp nbsp nbsp])
-(defn space4 [] [:text nbsp nbsp nbsp nbsp])
-(defn space5 [] [:text nbsp nbsp nbsp nbsp nbsp])
-
 (defn float-text
   "Display a number with a label so that size is similar to float inputs."
   [n & label]
@@ -175,17 +177,17 @@
      [float-input :s params$ 5 "selection coeff"]
      [float-input :h params$ 5 "heterozygote coeff"]
      [float-input :max-r params$ 5 "max recomb prob" [:em "r"]]
+     [spaces 5]
+     [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]
      [:text @is-running-text$] ; also doesn't work.
      [:br]
      [float-input :x1 params$ 5 "" [:em "x"] [:sub 1]]
      [float-input :x2 params$ 5 "" [:em "x"] [:sub 2]]
      [float-input :x3 params$ 5 "" [:em "x"] [:sub 3]]
-     (space4)
+     [spaces 3]
      [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
-     [:br]
-     [float-text (two/B-het [x1 x2 x3]) "initial neutral locus heterozygosity"]
-     (space5)
-     [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]])) ; text, color changes don't work
+     [spaces 13]
+     [float-text (two/B-het [x1 x2 x3]) "initial neutral heterozygosity"]]))
 
 (defn head []
   [:head
