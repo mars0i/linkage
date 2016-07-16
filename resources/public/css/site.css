@@ -2,24 +2,45 @@
 @import url("http://fonts.googleapis.com/css?family=Pontano Sans");
 
 text {
-  font-family: "Pontano Sans";
+  font-family:"Pontano Sans";
 }
 .text {
-  font-family: "Pontano Sans";
+  font-family:"Pontano Sans";
 }
 h3 {
-  font-family: "Pontano Sans";
-  font-size: 150%;
-  font-weight: normal;
-  color: #D00000;
+  font-family:"Pontano Sans";
+  font-size:150%;
+  font-weight:normal;
+  color:#D00000;
 }
 h2 {
-  font-family: "Pontano Sans";
-  font-size: 120%;
-  font-weight: normal;
-  color: #C04040;
+  font-family:"Pontano Sans";
+  font-size:120%;
+  font-weight:normal;
+  color:#C04040;
 }
-.button {
-  border-radius: 10px
-  border: 0px
+form {
+  font-family:"Pontano Sans";
+  font-size:16px;
+  font-weight:normal;
+}
+button {
+  color:#600000;
+  background-color:#d0d0f0;
+  border:2px solid #504060;
+  display:inline-block;
+  cursor:pointer;
+  font-family:"Pontano Sans";
+  font-size:12px;
+  font-weight:bold;
+  padding:1px 2px;
+  text-decoration:none;
+  border-radius:3px
+}
+button:hover {
+  background-color:#c0a0a0;
+}
+button:active {
+  position:relative;
+  top:1px;
 }
