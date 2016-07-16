@@ -127,40 +127,25 @@
                                 (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
+(def label1 "RE-RUN")
+(def label2 "RUNNING...")
+(def label$ (r/atom label1))
+
+(defn yo []
+                          (reset! label$ label2)
+                          (js/setTimeout #(do 
+                                            (make-chart chart-svg-id chart-params$)
+                                            (reset! label$ label1))
+                                         10))
+
 (defn chart-button
-  [svg-id label1 label2 color1 color2]
-  (let [label$ (r/atom label1)
-        color$ (r/atom color1)]
+  [svg-id label1 label2]
+;  (let [label$ (r/atom label1)]
     [:button {:type "button" 
-              :id "yo-button"
-              ;:style {:background-color @color$}
-              ;:on-mouse-down #(reset! color$ color2)
-              ;:on-mouse-up   #(reset! color$ color1)
-              ;:on-mouse-down #(reset! label$ label2)
-              ;:on-mouse-up #(reset! label$ label1)
-              :on-click (fn []
-                          ;(reset! color$ color2)
-                          ;(reset! label$ label2)
-                          ;(js/setTimeout (fn [] (reset! label$ label2) 10))
-                          ;(js/setTimeout (fn [] (reset! is-running-text$ label2) 1))
-                          ;(println @label$)
-                          ;(r/force-update-all)
-                          ;(reset! color$ color1)
-                          ;(println "about to reset")(flush)
-                          ;(reset! is-running-text$ "running...")
-                          ;(r/force-update-all)
-                          ;(println "about to make chart")(flush)
-                          (make-chart svg-id chart-params$)
-                          ;(println "done making chart")(flush)
-                          ;(reset! is-running-text$ "")
-                          ;(println "just re-reset")(flush)
-                          ;(reset! color$ color1)
-                          ;(reset! label$ label1)
-                          ;(reset! is-running-text$ "")
-                          ;(println @label$)
-                          )
+              :id "chart-button"
+              :on-click yo
               }
-     @label$]))
+     @label$]);)
 
 (defn float-text
   "Display a number with a label so that size is similar to float inputs."
@@ -178,8 +163,7 @@
      [float-input :h params$ 5 "heterozygote coeff"]
      [float-input :max-r params$ 5 "max recomb prob" [:em "r"]]
      [spaces 5]
-     [chart-button svg-id "re-run" "running..." "#F0C0C0" "#F0A0A0"]
-     [:text @is-running-text$] ; also doesn't work.
+     [chart-button svg-id "re-run" "running..."]
      [:br]
      [float-input :x1 params$ 5 "" [:em "x"] [:sub 1]]
      [float-input :x2 params$ 5 "" [:em "x"] [:sub 2]]
