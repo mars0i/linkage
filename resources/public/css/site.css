@@ -31,14 +31,14 @@ button {
   display:inline-block;
   cursor:pointer;
   font-family:"Pontano Sans";
-  font-size:12px;
+  font-size:14px;
   font-weight:bold;
   padding:1px 2px;
   text-decoration:none;
-  border-radius:3px
+  border-radius:4px
 }
 button:hover {
-  background-color:#c0a0a0;
+  background-color:#f0b0b0;
 }
 button:active {
   position:relative;
