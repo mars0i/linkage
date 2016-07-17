@@ -1,10 +1,11 @@
 # Gillespie's two-locus selected/neutral model 
 
-A plot of the results of simulations based on Gillespie's version of a
-model with linkage between a selected locus, *A*, and a neutral locus,
-*B*.  This is currently the only thing implemented in this git repo.
-See John Gillespie, *Population Genetics: A Concise Guide*, 2nd ed.,
-Johns Hopkins University Press 2004, section 4.2.
+The application shows a plot of the results of simulations based on
+Gillespie's version of a model with linkage between a selected locus,
+*A*, and a neutral locus, *B*.  This is currently the only thing
+implemented in this git repo.  See John Gillespie, *Population Genetics:
+A Concise Guide*, 2nd ed., Johns Hopkins University Press 2004, section
+4.2.
 
 ## Simulation
 
@@ -15,9 +16,11 @@ of *r* vary by a small amount, say, 1/10000.  For each value of *r*, the
 simulation runs for a several thousand generations, until the allele
 frequencies stop changing significantly.  This is an "infinite
 population" similation, which is to say that we assume that the
-population is large enough that genetic drift can be ignored.  (This is
+population is large enough that genetic drift can be ignored.  This is
 why we only need to run the simulation once for each recombination
-rate.)
+rate.  (Why not derive each point on the plot analytically?  "This
+cannot be done with mathematics as the equations are too complicated"
+(Gillespie 2004, p. 109).)
 
 You also get to to specify the selection coefficient *s*, which is
 the difference in fitness between the fitness, 1, of an organism that's
