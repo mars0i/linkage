@@ -127,7 +127,7 @@
                                 (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
-(def label$ (r/atom "Re-run")) ; I have to define this out here??
+(def label$ (r/atom "re-run")) ; I have to define this out here??
 
 (defn chart-button
   [svg-id label1 label2]
@@ -140,7 +140,7 @@
                         (js/setTimeout (fn [] ; trick: allow DOM to update before make-chart runs
                                          (make-chart svg-id chart-params$)
                                          (reset! label$ label1))
-                                       10))}
+                                       50))}
    @label$]);)
 
 (defn float-text
