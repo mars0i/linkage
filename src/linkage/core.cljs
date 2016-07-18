@@ -38,9 +38,6 @@
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
                                 :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
 
-(defonce is-running-text$ (r/atom ""))
-
-
 (defn het-ratio-coords
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
