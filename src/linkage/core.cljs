@@ -28,7 +28,6 @@
 (def num-sims 100)
 (def svg-height 400)
 (def svg-width 600)
-(def button-color "white")
 (def chart-svg-id "chart-svg")
 
 (def copyright-sym (goog.string/unescapeEntities "&copy;")) 
@@ -123,8 +122,6 @@
                #(update-params! params$ k 
                                 (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
-
-(def label$ (r/atom "re-run"))
 
 ;; a "form-2" component function (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
 (defn chart-button
