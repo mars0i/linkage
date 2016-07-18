@@ -65,7 +65,6 @@
 (defn make-chart [svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
-  ;(reset! is-running-text$ "running...")
   (let [s (:s @chart-params$)
         chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
@@ -91,9 +90,7 @@
         (select svg-id)
         (datum (make-chart-config chart-params$))
         (call chart))
-    ;(reset! is-running-text$ "")
     chart)) 
-     ;; in nvd3 examples, we return also chart, but not needed here
 
 (defn spaces 
   "Returns a text element containing n nbsp;'s."
