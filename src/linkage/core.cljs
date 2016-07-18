@@ -154,17 +154,18 @@
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id params$]
-  (let [{:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
+  (let [float-width 6
+        {:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [float-input :s params$ 5 "selection coeff"]
-     [float-input :h params$ 5 "heterozygote coeff"]
-     [float-input :max-r params$ 5 "max recomb prob" [:em "r"]]
+     [float-input :s params$ float-width "selection coeff"]
+     [float-input :h params$ float-width "heterozygote coeff"]
+     [float-input :max-r params$ float-width "max recomb prob" [:em "r"]]
      [spaces 4]
      [chart-button svg-id "re-run" "running..."]
      [:br]
-     [float-input :x1 params$ 5 "" [:em "x"] [:sub 1]]
-     [float-input :x2 params$ 5 "" [:em "x"] [:sub 2]]
-     [float-input :x3 params$ 5 "" [:em "x"] [:sub 3]]
+     [float-input :x1 params$ float-width "" [:em "x"] [:sub 1]]
+     [float-input :x2 params$ float-width "" [:em "x"] [:sub 2]]
+     [float-input :x3 params$ float-width "" [:em "x"] [:sub 3]]
      [spaces 3]
      [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
      [spaces 13]
