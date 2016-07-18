@@ -100,6 +100,21 @@
   [n]
   (into [:text] (repeat n nbsp)))
 
+;; a "form-2" component function (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
+(defn chart-button
+  [svg-id label1 label2]
+  (let [label$ (r/atom label1)] ; runs only once
+    (fn [svg-id label1 label2]  ; called repeatedly
+      [:button {:type "button" 
+                :id "chart-button"
+                :on-click (fn []
+                            (reset! label$ label2)
+                            (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
+                                             (make-chart svg-id chart-params$)
+                                             (reset! label$ label1))
+                                           100))}
+       @label$])))
+
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
 ;; dropdowns to a function that set a single global var for each.
 (defn float-input 
@@ -122,21 +137,6 @@
                #(update-params! params$ k 
                                 (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
-
-;; a "form-2" component function (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
-(defn chart-button
-  [svg-id label1 label2]
-  (let [label$ (r/atom label1)] ; runs only once
-    (fn [svg-id label1 label2]  ; called repeatedly
-      [:button {:type "button" 
-                :id "chart-button"
-                :on-click (fn []
-                            (reset! label$ label2)
-                            (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
-                                             (make-chart svg-id chart-params$)
-                                             (reset! label$ label1))
-                                           100))}
-       @label$])))
 
 (defn float-text
   "Display a number with a label so that size is similar to float inputs."
