@@ -177,7 +177,7 @@
    [:script {:type "text/javascript" :src "js/compiled/linkage.js"}]])
 
 (defn home-render []
-  "Set up main page (except for chart, which is made elsewhere)."
+  "Set up main chart page (except for chart)."
   (head)
   [:div
    [:h3 "Simulations: effect of selection on a linked neutral locus"]
