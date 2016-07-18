@@ -25,8 +25,8 @@ form {
   font-weight:normal;
 }
 button {
-  color:#600000;
-  background-color:#d0d0f0;
+  color:#800000;
+  background-color:#e0e0ff;
   border:2px solid #504060;
   display:inline-block;
   cursor:pointer;
@@ -38,7 +38,7 @@ button {
   border-radius:4px
 }
 button:hover {
-  background-color:#f0b0b0;
+  background-color:#ffd0d0;
 }
 button:active {
   position:relative;
