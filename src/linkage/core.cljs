@@ -141,7 +141,7 @@
                             (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                              (make-chart svg-id chart-params$)
                                              (reset! label$ label1))
-                                           50))}
+                                           100))}
        @label$])))
 
 (defn float-text
