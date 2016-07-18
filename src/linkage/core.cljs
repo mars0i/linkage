@@ -127,21 +127,22 @@
                                 (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
-(def label$ (r/atom "re-run")) ; I have to define this out here??
+(def label$ (r/atom "re-run"))
 
+;; a "form-2" component function (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
 (defn chart-button
   [svg-id label1 label2]
-  ;(let [label$ (r/atom label1)] ; local ratom doesn't update dom
-  ;(reset! label$ label1)        ; resetting global ratom doesn't work either
-  [:button {:type "button" 
-            :id "chart-button"
-            :on-click (fn []
-                        (reset! label$ label2)
-                        (js/setTimeout (fn [] ; trick: allow DOM to update before make-chart runs
-                                         (make-chart svg-id chart-params$)
-                                         (reset! label$ label1))
-                                       50))}
-   @label$]);)
+  (let [label$ (r/atom label1)] ; runs only once
+    (fn [svg-id label1 label2]  ; called repeatedly
+      [:button {:type "button" 
+                :id "chart-button"
+                :on-click (fn []
+                            (reset! label$ label2)
+                            (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
+                                             (make-chart svg-id chart-params$)
+                                             (reset! label$ label1))
+                                           50))}
+       @label$])))
 
 (defn float-text
   "Display a number with a label so that size is similar to float inputs."
