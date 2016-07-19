@@ -38,7 +38,7 @@
   "Given recombination probability r; selection parameters h and s with
   w(A1, A1)=1, w(A1, A2)=1-hs, w(A2, A2)=1-s; and previous-generation 
   frequencies of x1 through x3 for haplotypes A1B1, A1B2, A2B1, with 
-  the frequency x4 of A2B2 being calculated from the others;
+  the frequency x4 of A2B2 being calculated from the others,
   returns a (lazy) sequence of first three haplotype frequencies for 
   the next generation, in the same order as in the parameter list.
   The fourth haplotype x4 can be calculated as (- 1 x1 x2 x3)."
@@ -91,8 +91,6 @@
   [threshold freqs]
   (let [initial-freqs (first freqs)
         final-freqs (freqs-at-p1-threshold threshold freqs)]
-    ;(println initial-freqs final-freqs)                 ; DEBUG
-    ;(println (B-het final-freqs) (B-het initial-freqs)) ; DEBUG
     (/ (B-het final-freqs)
        (B-het initial-freqs))))
 
