@@ -6,8 +6,8 @@
 
   :min-lein-version "2.6.1"
   
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.8.51"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha10"]
+                 [org.clojure/clojurescript "1.9.89"]
                  [org.clojure/core.async "0.2.374" :exclusions [org.clojure/tools.reader]]
                  [reagent "0.6.0-rc"]
                  [reagent-utils "0.1.9"] ; includes reagent.session
