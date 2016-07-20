@@ -43,7 +43,7 @@ haplotype, will be calculated as 1 - (*x*<sub>1</sub> + *x*<sub>2</sub> +
 *x*<sub>3</sub>).
 
 Warning: You must specify *r*, *s* to be greater than 0 and less than or
-equal to 1 (normally, *r* should beless than or equal to 0.5), i.e. in (0,1], and *h* 
+equal to 1 (normally, *r* should be less than or equal to 0.5), i.e. in (0,1], and *h* 
 must be strictly between 0 and 1,i.e.  in (0,1); full dominance or recessivity
 isn't allowed, nor is over- or underdominance.  Also, *x*<sub>1</sub>, 
 *x*<sub>2</sub>, and *x*<sub>3</sub> must each be greater than or equal to 0, 
