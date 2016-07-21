@@ -26,9 +26,9 @@
 ;; -------------------------
 ;; spec
 
-(s/def ::gele01 #(and (>= % 0) (<= % 1)))
-(s/def ::gtle01 #(and (> % 0)  (<= % 1)))
-(s/def ::gtlt01 #(and (> % 0)  (< % 1)))
+(s/def ::gele01 (s/and #(>= % 0) #(<= % 1)))
+(s/def ::gtle01 (s/and #(> % 0)  #(<= % 1)))
+(s/def ::gtlt01 (s/and #(> % 0)  #(< % 1)))
 
 (defn conform-if-spec
   "If spec is truthy, apply conform spec to second argument.
