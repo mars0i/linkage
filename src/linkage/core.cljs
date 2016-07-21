@@ -26,9 +26,24 @@
 ;; -------------------------
 ;; spec
 
-(s/def ::gele01 (s/and #(>= % 0) #(<= % 1)))
-(s/def ::gtle01 (s/and #(> % 0)  #(<= % 1)))
-(s/def ::gtlt01 (s/and #(> % 0)  #(< % 1)))
+(defn interval-spec
+  [inf inf-fn sup sup-fn]
+  (s/and #(inf-fn % inf)
+         #(sup-fn % sup)))
+
+;(s/def ::ge0le1 (s/and #(>= % 0) #(<= % 1))) ;; Clojurescript 1.9.89 doesn't yet have double-in
+;(s/def ::gt0le1 (s/and #(> % 0)  #(<= % 1)))
+;(s/def ::ge0lt1 (s/and #(>= % 0) #(< % 1)))
+;(s/def ::gt0lt1 (s/and #(> % 0)  #(< % 1)))
+
+(s/def ::max-r (interval-spec 0.0 >  0.5 <=))
+(s/def ::s     (interval-spec 0.0 >  1.0 <=))
+(s/def ::h     (interval-spec 0.0 >  1.0 <))
+;; setting freqs to 1 causes problems:
+(s/def ::x1    (interval-spec 0.0 >  1.0 <)) ; 0 seems to cause problems
+(s/def ::x2    (interval-spec 0.0 >= 1.0 <))
+(s/def ::x3    (interval-spec 0.0 >= 1.0 <))
+(s/def ::sumx1x2x3 (interval-spec 0.0 > 1.0 <=))
 
 (defn conform-if-spec
   "If spec is truthy, apply conform spec to second argument.
@@ -130,6 +145,7 @@
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
+
                             (reset! label$ label2)
                             (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                              (make-chart svg-id chart-params$)
@@ -145,8 +161,8 @@
   be converted to a string an set as the id and name properties of the input 
   element.  This string will also be used as the name of the variable in the label,
   unless var-label is present, in which it will be used for that purpose."
-  ([spec k params$ size label] (float-input spec k params$ size label [:em (name k)]))
-  ([spec k params$ size label & var-label]
+  ([k params$ size label] (float-input k params$ size label [:em (name k)]))
+  ([k params$ size label & var-label]
    (let [id (name k)
          old-val (k @params$)]
      [:span {:id (str id "-span")}
@@ -156,9 +172,7 @@
                :type "text"
                :size size
                :defaultValue old-val
-               :on-change #(let [new-val (js/parseFloat (-> % .-target .-value))
-                                 final-val (if (valid-if-spec? spec new-val) new-val old-val)]
-                             (update-params! params$ k final-val))}]
+               :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
 (defn float-text
@@ -174,15 +188,15 @@
   (let [float-width 6
         {:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [float-input ::gtle01 :s params$ float-width "selection coeff"]
-     [float-input ::gtlt01 :h params$ float-width "heterozygote coeff"]
-     [float-input ::gtle01 :max-r params$ float-width "max recomb prob" [:em "r"]]
+     [float-input :s params$ float-width "selection coeff"]
+     [float-input :h params$ float-width "heterozygote coeff"]
+     [float-input :max-r params$ float-width "max recomb prob" [:em "r"]]
      [spaces 4]
      [chart-button svg-id "re-run" "running..."]
      [:br]
-     [float-input nil :x1 params$ float-width "" [:em "x"] [:sub 1]]
-     [float-input nil :x2 params$ float-width "" [:em "x"] [:sub 2]]
-     [float-input nil :x3 params$ float-width "" [:em "x"] [:sub 3]]
+     [float-input :x1 params$ float-width "" [:em "x"] [:sub 1]]
+     [float-input :x2 params$ float-width "" [:em "x"] [:sub 2]]
+     [float-input :x3 params$ float-width "" [:em "x"] [:sub 3]]
      [spaces 3]
      [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
      [spaces 13]
