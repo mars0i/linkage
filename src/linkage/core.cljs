@@ -45,10 +45,14 @@
 (s/def ::x2    (interval-spec 0.0 >= 1.0 <))
 (s/def ::x3    (interval-spec 0.0 >= 1.0 <))
 
-;; This expects to see @chart-params$
+(s/def ::indiv-chart-params 
+  (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
+
 (s/def ::sumx1x2x3 #(let [{:keys [x1 x2 x3]} %]
                       (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
 ;; Is this the right way to do this?
+
+(s/def ::chart-params (s/and ::indiv-chart-params ::sumx1x2x3))
 
 ;(defn conform-if-spec
 ;  "If spec is truthy, apply conform spec to second argument.
