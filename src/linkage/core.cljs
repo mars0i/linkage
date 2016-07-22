@@ -45,8 +45,7 @@
 (s/def ::x2    (interval-spec 0.0 >= 1.0 <))
 (s/def ::x3    (interval-spec 0.0 >= 1.0 <))
 
-(s/def ::indiv-chart-params 
-  (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
+(s/def ::indiv-chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
 
 (s/def ::sumx1x2x3 #(let [{:keys [x1 x2 x3]} %]
                       (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
@@ -89,7 +88,7 @@
 (defn het-ratio-coords
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
- [max-r s h x1 x2 x3]
+  [max-r s h x1 x2 x3]
   (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r num-sims))
         het-ratios (map #(two/B-het-ratio % s h x1 x2 x3) rs)]
     (vec (map #(hash-map :x %1 :y %2)
@@ -154,12 +153,15 @@
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
-
-                            (reset! label$ label2)
-                            (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
-                                             (make-chart svg-id chart-params$)
-                                             (reset! label$ label1))
-                                           100))}
+                            (if (s/valid? ::chart-params @chart-params$)
+                              (do 
+                                (reset! label$ label2)
+                                (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
+                                                 (make-chart svg-id chart-params$)
+                                                 (reset! label$ label1))
+                                               100))
+                              (reset! label$ "Uh-oh!")
+                              ))}
        @label$])))
 
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
@@ -258,7 +260,7 @@
 ;; ----------------------------
 
 ;; From simple figwheel template:
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
+;; optionally touch your app-state to force rerendering depending on
+;; your application
+;; (swap! app-state update-in [:__figwheel_counter] inc)
 (defn on-js-reload [])
