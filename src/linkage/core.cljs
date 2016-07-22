@@ -160,8 +160,7 @@
                                                  (make-chart svg-id chart-params$)
                                                  (reset! label$ label1))
                                                100))
-                              (reset! label$ "Uh-oh!")
-                              ))}
+                              (reset! label$ "Uh-oh!")))}
        @label$])))
 
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
