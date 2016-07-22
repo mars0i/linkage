@@ -36,6 +36,7 @@
 ;(s/def ::ge0lt1 (s/and #(>= % 0) #(< % 1)))
 ;(s/def ::gt0lt1 (s/and #(> % 0)  #(< % 1)))
 
+;; These expect to get numbers passed to them:
 (s/def ::max-r (interval-spec 0.0 >  0.5 <=))
 (s/def ::s     (interval-spec 0.0 >  1.0 <=))
 (s/def ::h     (interval-spec 0.0 >  1.0 <))
@@ -43,23 +44,27 @@
 (s/def ::x1    (interval-spec 0.0 >  1.0 <)) ; 0 seems to cause problems
 (s/def ::x2    (interval-spec 0.0 >= 1.0 <))
 (s/def ::x3    (interval-spec 0.0 >= 1.0 <))
-(s/def ::sumx1x2x3 (interval-spec 0.0 > 1.0 <=))
 
-(defn conform-if-spec
-  "If spec is truthy, apply conform spec to second argument.
-  Otherwise return argument unchanged."
-  [spec x]
-  (if spec
-    (s/conform spec x)
-    x))
+;; This expects to see @chart-params$
+(s/def ::sumx1x2x3 #(let [{:keys [x1 x2 x3]} %]
+                      (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
+;; Is this the right way to do this?
 
-(defn valid-if-spec?
-  "If spec is truthy, apply valid? spec to second argument.
-  Otherwise return true."
-  [spec x]
-  (if spec
-    (s/valid? spec x)
-    true))
+;(defn conform-if-spec
+;  "If spec is truthy, apply conform spec to second argument.
+;  Otherwise return argument unchanged."
+;  [spec x]
+;  (if spec
+;    (s/conform spec x)
+;    x))
+;
+;(defn valid-if-spec?
+;  "If spec is truthy, apply valid? spec to second argument.
+;  Otherwise return true."
+;  [spec x]
+;  (if spec
+;    (s/valid? spec x)
+;    true))
 
 ;; -------------------------
 ;; app code
