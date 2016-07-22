@@ -31,6 +31,11 @@
   (s/and #(inf-fn % inf)
          #(sup-fn % sup)))
 
+(defn applied-interval-spec
+  [inf inf-fn sup sup-fn arg]
+  (s/and #(inf-fn arg inf)
+         #(sup-fn arg sup)))
+
 ;(s/def ::ge0le1 (s/and #(>= % 0) #(<= % 1))) ;; Clojurescript 1.9.89 doesn't yet have double-in
 ;(s/def ::gt0le1 (s/and #(> % 0)  #(<= % 1)))
 ;(s/def ::ge0lt1 (s/and #(>= % 0) #(< % 1)))
@@ -47,9 +52,16 @@
 
 (s/def ::indiv-chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
 
-(s/def ::sumx1x2x3 #(let [{:keys [x1 x2 x3]} %]
-                      (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
-;; Is this the right way to do this?
+;(s/def ::sumx1x2x3 #(let [{:keys [x1 x2 x3]} %]
+;                      (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
+;; Seems to work, but is it this the right way to do this?
+
+;; I think this might be a correct way to do it:
+(s/def ::sumx1x2x3 (fn [xs]
+                     (let [{:keys [x1 x2 x3]} xs
+                           sum (+ x1 x2 x3)]
+                       (applied-interval-spec 0.0 > 1.0 <= sum))))
+                       ;(s/and #(> sum 0.0) #(<= sum 1.0)))))
 
 (s/def ::chart-params (s/and ::indiv-chart-params ::sumx1x2x3))
 
