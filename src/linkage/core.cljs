@@ -31,24 +31,24 @@
   (s/and #(inf-fn % inf)
          #(sup-fn % sup)))
 
+(defn ge-le [inf sup] (interval-spec inf >= sup <=))
+(defn ge-lt [inf sup] (interval-spec inf >= sup < ))
+(defn gt-le [inf sup] (interval-spec inf >  sup <=))
+(defn gt-lt [inf sup] (interval-spec inf >  sup < ))
+
 (defn applied-interval-spec
   [inf inf-fn sup sup-fn arg]
   (s/and #(inf-fn arg inf)
          #(sup-fn arg sup)))
 
-;(s/def ::ge0le1 (s/and #(>= % 0) #(<= % 1))) ;; Clojurescript 1.9.89 doesn't yet have double-in
-;(s/def ::gt0le1 (s/and #(> % 0)  #(<= % 1)))
-;(s/def ::ge0lt1 (s/and #(>= % 0) #(< % 1)))
-;(s/def ::gt0lt1 (s/and #(> % 0)  #(< % 1)))
-
 ;; These expect to get numbers passed to them:
-(s/def ::max-r (interval-spec 0.0 >  0.5 <=))
-(s/def ::s     (interval-spec 0.0 >  1.0 <=))
-(s/def ::h     (interval-spec 0.0 >  1.0 <))
+(s/def ::max-r (gt-le 0.0 0.5))
+(s/def ::s     (gt-le 0.0 1.0))
+(s/def ::h     (gt-lt 0.0 1.0))
 ;; setting freqs to 1 causes problems:
-(s/def ::x1    (interval-spec 0.0 >  1.0 <)) ; 0 seems to cause problems
-(s/def ::x2    (interval-spec 0.0 >= 1.0 <))
-(s/def ::x3    (interval-spec 0.0 >= 1.0 <))
+(s/def ::x1    (gt-lt 0.0 1.0)) ; 0 seems to cause problems
+(s/def ::x2    (ge-lt 0.0 1.0))
+(s/def ::x3    (ge-lt 0.0 1.0))
 
 (s/def ::indiv-chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
 
