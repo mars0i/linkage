@@ -26,9 +26,14 @@
 ;; -------------------------
 ;; spec
 
-;(defn interval-spec
-;  [inf inf-fn sup sup-fn]
-;  (s/and #(inf-fn % inf) #(sup-fn % sup)))
+(defn explain-data-problem-keys
+  "Given the result of a call to spec/explain-data, returns the keys of 
+  the tests that failed."
+  [data]
+  (map first 
+       (keys  ; will this always work? should I get the :in val?
+         (:cljs.spec/problems data))))
+
 
 (defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
 (defn ge-lt [inf sup] (s/and #(>= % inf) #(<  % sup)))
@@ -193,12 +198,9 @@
                                                100))
                               (do 
                                 (reset! label$ "Uh-oh!")
-                                (let [problem-keys (map first  ;; doesn't yet find problem with x1+x2+x3
-                                                        (keys 
-                                                          (:cljs.spec/problems
-                                                            (s/explain-data ::chart-params @chart-params$))))]
-                                  (doseq [k problem-keys]
-                                    (swap! chart-param-colors$ assoc k "#FF0000"))))))}
+                                (doseq [k (explain-data-problem-keys 
+                                            (s/explain-data ::chart-params @chart-params$))]
+                                  (swap! chart-param-colors$ assoc k error-input-color)))))}
        @label$])))
 
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
