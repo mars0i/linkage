@@ -36,11 +36,6 @@
 (defn gt-le [inf sup] (interval-spec inf >  sup <=))
 (defn gt-lt [inf sup] (interval-spec inf >  sup < ))
 
-(defn applied-interval-spec
-  [inf inf-fn sup sup-fn arg]
-  (s/and #(inf-fn arg inf)
-         #(sup-fn arg sup)))
-
 ;; These expect to get numbers passed to them:
 (s/def ::max-r (gt-le 0.0 0.5))
 (s/def ::s     (gt-le 0.0 1.0))
@@ -49,18 +44,28 @@
 (s/def ::x1    (gt-lt 0.0 1.0)) ; 0 seems to cause problems
 (s/def ::x2    (ge-lt 0.0 1.0))
 (s/def ::x3    (ge-lt 0.0 1.0))
+(s/def ::x1+x2+x3 (gt-le 0.0 1.0))
 
 (s/def ::indiv-chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
+
+(defn applied-interval-spec
+  [inf inf-fn sup sup-fn arg]
+  (s/and #(inf-fn arg inf)
+         #(sup-fn arg sup)))
 
 ;(s/def ::sumx1x2x3 #(let [{:keys [x1 x2 x3]} %]
 ;                      (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
 ;; Seems to work, but is it this the right way to do this?
 
-;; I think this might be a correct way to do it:
-(s/def ::sumx1x2x3 (fn [xs]
-                     (let [{:keys [x1 x2 x3]} xs
-                           sum (+ x1 x2 x3)]
-                       (applied-interval-spec 0.0 > 1.0 <= sum))))
+;; This works, but seems ... wrong:
+(s/def ::freqs (fn [{:keys [x1 x2 x3]}] (s/valid? ::x1+x2+x3 (+ x1 x2 x3))))
+
+;; These don't work:
+
+;(s/def ::sumx1x2x3 (fn [xs]
+;                     (let [{:keys [x1 x2 x3]} xs
+;                           sum (+ x1 x2 x3)]
+;                       (applied-interval-spec 0.0 > 1.0 <= sum))))
 
 ;(s/def ::sumx1x2x3 (fn [params]
 ;                     (let [{:keys [x1 x2 x3]} params
