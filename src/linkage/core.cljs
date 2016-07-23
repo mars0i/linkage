@@ -34,7 +34,6 @@
        (keys  ; will this always work? should I get the :in val?
          (:cljs.spec/problems data))))
 
-
 (defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
 (defn ge-lt [inf sup] (s/and #(>= % inf) #(<  % sup)))
 (defn gt-le [inf sup] (s/and #(>  % inf) #(<= % sup)))
@@ -52,19 +51,15 @@
 
 (s/def ::indiv-chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
 
-(defn applied-interval-spec
-  [inf inf-fn sup sup-fn arg]
-  (s/and #(inf-fn arg inf)
-         #(sup-fn arg sup)))
-
-;(s/def ::freqs #(let [{:keys [x1 x2 x3]} %]
-;                      (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
-;; Seems to work, but is it this the right way to do this?
-
 ;; This works, but seems ... wrong:
 (s/def ::freqs (fn [{:keys [x1 x2 x3]}] (s/valid? ::x1+x2+x3 (+ x1 x2 x3))))
 
 ;; These don't work:
+
+;(defn applied-interval-spec
+;  [inf inf-fn sup sup-fn arg]
+;  (s/and #(inf-fn arg inf)
+;         #(sup-fn arg sup)))
 
 ;(s/def ::freqs (fn [xs]
 ;                     (let [{:keys [x1 x2 x3]} xs
@@ -84,22 +79,6 @@
 ;                             (<= sum 1.0)))))
 
 (s/def ::chart-params (s/and ::indiv-chart-params ::freqs))
-
-;(defn conform-if-spec
-;  "If spec is truthy, apply conform spec to second argument.
-;  Otherwise return argument unchanged."
-;  [spec x]
-;  (if spec
-;    (s/conform spec x)
-;    x))
-;
-;(defn valid-if-spec?
-;  "If spec is truthy, apply valid? spec to second argument.
-;  Otherwise return true."
-;  [spec x]
-;  (if spec
-;    (s/valid? spec x)
-;    true))
 
 ;; -------------------------
 ;; app code
