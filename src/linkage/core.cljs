@@ -104,6 +104,8 @@
 (def svg-height 400)
 (def svg-width 600)
 (def chart-svg-id "chart-svg")
+(def default-input-color "#000000")
+(def error-input-color   "#FF0000")
 
 (def copyright-sym (goog.string/unescapeEntities "&copy;")) 
 (def nbsp (goog.string/unescapeEntities "&nbsp;")) 
@@ -112,8 +114,8 @@
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
                                 :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
 
-(defonce default-chart-param-colors {:max-r "#000000" :s "#000000" :h "#000000" 
-                                     :x1 "#000000" :x2 "#000000":x3 "#000000"})
+(defonce default-chart-param-colors (zipmap (keys @chart-params$) 
+                                            (repeat default-input-color)))
 
 (defonce chart-param-colors$ (r/atom default-chart-param-colors))
 
