@@ -52,7 +52,7 @@
   (s/and #(inf-fn arg inf)
          #(sup-fn arg sup)))
 
-;(s/def ::sumx1x2x3 #(let [{:keys [x1 x2 x3]} %]
+;(s/def ::freqs #(let [{:keys [x1 x2 x3]} %]
 ;                      (s/valid? (interval-spec 0.0 > 1.0 <=) (+ x1 x2 x3))))
 ;; Seems to work, but is it this the right way to do this?
 
@@ -61,24 +61,24 @@
 
 ;; These don't work:
 
-;(s/def ::sumx1x2x3 (fn [xs]
+;(s/def ::freqs (fn [xs]
 ;                     (let [{:keys [x1 x2 x3]} xs
 ;                           sum (+ x1 x2 x3)]
 ;                       (applied-interval-spec 0.0 > 1.0 <= sum))))
 
-;(s/def ::sumx1x2x3 (fn [params]
+;(s/def ::freqs (fn [params]
 ;                     (let [{:keys [x1 x2 x3]} params
 ;                           sum (+ x1 x2 x3)]
 ;                       (s/and #(> sum 0.0)
 ;                              #(<= sum 1.0)))))
 
-;(s/def ::sumx1x2x3 (fn [params]
+;(s/def ::freqs (fn [params]
 ;                     (let [{:keys [x1 x2 x3]} params
 ;                           sum (+ x1 x2 x3)]
 ;                       #(and (> sum 0.0)
 ;                             (<= sum 1.0)))))
 
-(s/def ::chart-params (s/and ::indiv-chart-params ::sumx1x2x3))
+(s/def ::chart-params (s/and ::indiv-chart-params ::freqs))
 
 ;(defn conform-if-spec
 ;  "If spec is truthy, apply conform spec to second argument.
@@ -112,6 +112,11 @@
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
                                 :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
 
+(defonce default-chart-param-colors {:max-r "#000000" :s "#000000" :h "#000000" 
+                                     :x1 "#000000" :x2 "#000000":x3 "#000000"})
+
+(defonce chart-param-colors$ (r/atom default-chart-param-colors))
+
 (defn het-ratio-coords
   "Generate heterozygosity final/initial ratio for recombination rates r
   from 0 to max-r, using selection coefficient s and heterozygote factor h."
@@ -121,10 +126,6 @@
     (vec (map #(hash-map :x %1 :y %2)
               (map #(/ % s) rs) ; we calculated the data wrt vals of r,
               het-ratios))))      ; but we want to display it using r/s
-
-(defn update-params! [params$ k v]
-  "Update params$ with value v for key k."
-  (swap! params$ assoc k v))
 
 (defn make-chart-config [chart-params$]
   "Make NVD3 chart configuration data object."
@@ -182,19 +183,27 @@
                 :on-click (fn []
                             (if (s/valid? ::chart-params @chart-params$)
                               (do 
-                                (reset! label$ label2)
+                                (reset! label$ label2) ; button label should show it's running
+                                (reset! chart-param-colors$ default-chart-param-colors) ; make sure input text is all the default
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                                  (make-chart svg-id chart-params$)
                                                  (reset! label$ label1))
                                                100))
-                              (reset! label$ "Uh-oh!")))}
+                              (do 
+                                (reset! label$ "Uh-oh!")
+                                (let [problem-keys (map first  ;; doesn't yet find problem with x1+x2+x3
+                                                        (keys 
+                                                          (:cljs.spec/problems
+                                                            (s/explain-data ::chart-params @chart-params$))))]
+                                  (doseq [k problem-keys]
+                                    (swap! chart-param-colors$ assoc k "#FF0000"))))))}
        @label$])))
 
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
 ;; dropdowns to a function that set a single global var for each.
 (defn float-input 
   "Create a text input that accepts numbers.  k is keyword to be used to extract
-  a default value from params$, and to be passed to update-params!.  It will also 
+  a default value from params$, and to be passed to swap! assoc.  It will also 
   be converted to a string an set as the id and name properties of the input 
   element.  This string will also be used as the name of the variable in the label,
   unless var-label is present, in which it will be used for that purpose."
@@ -207,9 +216,10 @@
       [:input {:id id
                :name id
                :type "text"
+               :style {:color (k @chart-param-colors$)} ;; PASS AS ARG?
                :size size
                :defaultValue old-val
-               :on-change #(update-params! params$ k (js/parseFloat (-> % .-target .-value)))}]
+               :on-change #(swap! params$ assoc k (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
 (defn float-text
