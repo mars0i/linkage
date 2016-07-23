@@ -26,15 +26,14 @@
 ;; -------------------------
 ;; spec
 
-(defn interval-spec
-  [inf inf-fn sup sup-fn]
-  (s/and #(inf-fn % inf)
-         #(sup-fn % sup)))
+;(defn interval-spec
+;  [inf inf-fn sup sup-fn]
+;  (s/and #(inf-fn % inf) #(sup-fn % sup)))
 
-(defn ge-le [inf sup] (interval-spec inf >= sup <=))
-(defn ge-lt [inf sup] (interval-spec inf >= sup < ))
-(defn gt-le [inf sup] (interval-spec inf >  sup <=))
-(defn gt-lt [inf sup] (interval-spec inf >  sup < ))
+(defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
+(defn ge-lt [inf sup] (s/and #(>= % inf) #(<  % sup)))
+(defn gt-le [inf sup] (s/and #(>  % inf) #(<= % sup)))
+(defn gt-lt [inf sup] (s/and #(>  % inf) #(<  % sup)))
 
 ;; These expect to get numbers passed to them:
 (s/def ::max-r (gt-le 0.0 0.5))
