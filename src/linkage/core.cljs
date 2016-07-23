@@ -61,7 +61,18 @@
                      (let [{:keys [x1 x2 x3]} xs
                            sum (+ x1 x2 x3)]
                        (applied-interval-spec 0.0 > 1.0 <= sum))))
-                       ;(s/and #(> sum 0.0) #(<= sum 1.0)))))
+
+;(s/def ::sumx1x2x3 (fn [params]
+;                     (let [{:keys [x1 x2 x3]} params
+;                           sum (+ x1 x2 x3)]
+;                       (s/and #(> sum 0.0)
+;                              #(<= sum 1.0)))))
+
+;(s/def ::sumx1x2x3 (fn [params]
+;                     (let [{:keys [x1 x2 x3]} params
+;                           sum (+ x1 x2 x3)]
+;                       #(and (> sum 0.0)
+;                             (<= sum 1.0)))))
 
 (s/def ::chart-params (s/and ::indiv-chart-params ::sumx1x2x3))
 
