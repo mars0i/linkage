@@ -241,9 +241,7 @@
   "Set up main chart page (except for chart)."
   (head)
   [:div
-   [:h3 "Simulations: effect of selection on a linked neutral locus"]
-   [:h2 "See Gillespie's " [:em "Population Genetics: A Concise Guide"] 
-    " 2nd ed., section 4.2., and the file TwoLocusGillespie42.md ."]
+   [:h2 "Simulations: effect of selection on a linked neutral locus"]
    [:text "Marshall Abrams (" copyright-sym " 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id chart-svg-id :height (str svg-height "px")}]
