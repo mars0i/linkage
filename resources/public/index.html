@@ -1,14 +1,95 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <link href="css/site.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <div id="app">
-      <h3>Simulations: effect of selection on a linked neutral locus</h3>
-      <h2>Please wait while simulations run ...</h2>
+      <h2>Simulations: effect of selection on a linked neutral locus</h3>
+      <h3>Please wait while simulations run ...</h2>
     </div>
     <script src="js/compiled/linkage.js" type="text/javascript"></script>
   </body>
+  <div id="documentation" class="text">
+    <h2 id="gillespie-s-two-locus-selected-neutral-model">Gillespie&rsquo;s two-locus selected/neutral model:</h2>
+
+    <p>The page shows a plot of the results of simulations based on
+    Gillespie&rsquo;s version of a model with linkage between a selected locus,
+    <em>A</em>, and a neutral locus, <em>B</em>.  It's an implementation of a model
+    described by John Gillespie, <em>Population Genetics:
+    A Concise Guide</em>, 2nd ed., Johns Hopkins University Press 2004, section
+    4.2.</p>
+    
+    <h3 id="simulation">Simulation</h3>
+    
+    <p>The plot is the result of simulating the evolution of a population many
+    times, each time with a different recombination rate (probability) <em>r</em>,
+    from <em>r</em> = 0 to <em>r</em> = a maximum specified by, you, the user.  The values
+    of <em>r</em> vary by a small amount, say, 1/10000.  For each value of <em>r</em>, the
+    simulation runs for a several thousand generations, until the allele
+    frequencies stop changing significantly.  This is an &ldquo;infinite
+    population&rdquo; similation, which is to say that we assume that the
+    population is large enough that genetic drift can be ignored.  This is
+    why we only need to run the simulation once for each recombination
+    rate.  (Why not derive each point on the plot analytically?  &ldquo;This
+    cannot be done with mathematics as the equations are too complicated&rdquo;
+    (Gillespie 2004, p. 109).)</p>
+    
+    <p>You also get to to specify the selection coefficient <em>s</em>, which is
+    the difference in fitness between the fitness, 1, of an organism that&rsquo;s
+    homozygous for allele <em>A</em><sub>1</sub> and the fitness 1-<em>s</em> of an
+    organism that&rsquo;s homozygous for <em>A</em><sub>2</sub>.    You can also
+    specify <em>h</em>, which specifies where in between the fitnesses of the two
+    homozygotes the fitness of the heterozygote lies.  This model does
+    not have a way of specifying overdominance or underdominance: The
+    fitness of heterozygotes must be intermediate between the higher and
+    lower fitness homozygotes.</p>
+    
+    <p>Finally, you can specify the initial haplotype frequencies
+    <em>x</em><sub>1</sub>, <em>x</em><sub>2</sub>, and <em>x</em><sub>3</sub>:</p>
+    
+    <ul>
+    <li><em>x</em><sub>1</sub> is the frequency of the <em>A</em><sub>1</sub><em>B</em><sub>1</sub> haplotype.</li>
+    <li><em>x</em><sub>2</sub> is the frequency of the <em>A</em><sub>1</sub><em>B</em><sub>2</sub> haplotype.</li>
+    <li><em>x</em><sub>3</sub> is the frequency of the <em>A</em><sub>2</sub><em>B</em><sub>1</sub> haplotype.</li>
+    <li><em>x</em><sub>4</sub>, the frequency of the <em>A</em><sub>2</sub><em>B</em><sub>2</sub>
+    haplotype, will be calculated as 1 - (<em>x</em><sub>1</sub> + <em>x</em><sub>2</sub> +
+    <em>x</em><sub>3</sub>).</li>
+    </ul>
+    
+    <p>Warning: You must specify <em>r</em>, <em>s</em> to be greater than 0 and less than or
+    equal to 1 (normally, <em>r</em> should be less than or equal to 0.5), i.e. in (0,1], and <em>h</em>
+    must be strictly between 0 and 1,i.e.  in (0,1); full dominance or recessivity
+    isn&rsquo;t allowed, nor is over- or underdominance.  Also, <em>x</em><sub>1</sub>,
+    <em>x</em><sub>2</sub>, and <em>x</em><sub>3</sub> must each be greater than or equal to 0,
+    and must sum to less than or equal to 1.  Violation of these rules will produce
+    nonsensical results or throw the simulation into an infinite loop.</p>
+    
+    <p>Since the simulation runs many times, for many generations, it can
+    take a few seconds to regenerate the plot, especially on a slow
+    computer. The number of simulations that get run depends on the values
+    of <em>s</em> and the maximum for <em>r</em>.  If <em>s</em> is small, you may have to wait
+    a bit.  Some browsers, such as Firefox, may pop up a warning message
+    about (e.g.) an &ldquo;unresponsive script&rdquo;. Unless you&rsquo;ve done something
+    forbidden with the parameters you specified, though, the simulations
+    are just taking a long time to run, and you can just tell Firefox to
+    let the script run.  If you don&rsquo;t like this message in Firefox, you
+    can use a different browser or <a href="https://support.mozilla.org/en-US/kb/warning-unresponsive-script">turn off the timeout
+    function</a>.</p>
+    
+    <h3 id="more-on-what-s-in-gillespie-s-book">More on what&rsquo;s in Gillespie&rsquo;s book</h3>
+    
+    <p>The goal of the simulation of the data is summarized in Problem 4.3.
+    Gillespie has Python implementation of the at the end of the chapter
+    (which has a mistake in one line, btw&ndash;perhaps intentionally?).  The
+    Python code only generates data, however.  Here I also generate a plot
+    of the simulation results, similar to the right half Gillespie&rsquo;s figure
+    4.4.  (The easiest way to generate the left half is simply to reflect
+    the right half around the zero <em>x</em> axis.  What seems to be represented
+    on the left is &ldquo;negative&rdquo; recombination rates or selection coefficients,
+    neither of which makes much sense.  However, Gillespie is using <em>r</em>/<em>s</em>
+    as a sort of abstract a measure of distance on a chromosome or chromsomes,
+    so he extends it in both directions.)</p>
+    </div>
 </html>

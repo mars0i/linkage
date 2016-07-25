@@ -7,13 +7,19 @@ text {
 .text {
   font-family:"Pontano Sans";
 }
-h3 {
+h1 {
+  font-family:"Pontano Sans";
+  font-size:180%;
+  font-weight:normal;
+  color:#D00000;
+}
+h2 {
   font-family:"Pontano Sans";
   font-size:150%;
   font-weight:normal;
   color:#D00000;
 }
-h2 {
+h3 {
   font-family:"Pontano Sans";
   font-size:120%;
   font-weight:normal;
