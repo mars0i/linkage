@@ -56,34 +56,6 @@
 
 (s/def ::chart-params (s/and ::indiv-chart-params ::freqs))
 
-;; This works, but seems ... wrong:
-;(s/def ::x1+x2+x3 (gt-le 0.0 1.0))
-;(s/def ::freqs (fn [{:keys [x1 x2 x3]}] (s/valid? ::x1+x2+x3 (+ x1 x2 x3))))
-
-;; These don't work:
-
-;(defn applied-interval-spec
-;  [inf inf-fn sup sup-fn arg]
-;  (s/and #(inf-fn arg inf)
-;         #(sup-fn arg sup)))
-
-;(s/def ::freqs (fn [xs]
-;                     (let [{:keys [x1 x2 x3]} xs
-;                           sum (+ x1 x2 x3)]
-;                       (applied-interval-spec 0.0 > 1.0 <= sum))))
-
-;(s/def ::freqs (fn [params]
-;                     (let [{:keys [x1 x2 x3]} params
-;                           sum (+ x1 x2 x3)]
-;                       (s/and #(> sum 0.0)
-;                              #(<= sum 1.0)))))
-
-;(s/def ::freqs (fn [params]
-;                     (let [{:keys [x1 x2 x3]} params
-;                           sum (+ x1 x2 x3)]
-;                       #(and (> sum 0.0)
-;                             (<= sum 1.0)))))
-
 ;; -------------------------
 ;; app code
 
@@ -171,6 +143,7 @@
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
+                            (reset! chart-param-colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (if-let [spec-data (s/explain-data ::chart-params @chart-params$)] ; if bad inputs. explain-data is nil if data ok.
                               (do
                                 (reset! label$ "Uh-oh!")
@@ -181,7 +154,6 @@
                                       (swap! chart-param-colors$ assoc xk error-input-color))))); [KLUDGE: FIXME when possible]
                               (do
                                 (reset! label$ label2) ; button label should show it's running
-                                (reset! chart-param-colors$ default-chart-param-colors)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                                  (make-chart svg-id chart-params$)
                                                  (reset! label$ label1))
