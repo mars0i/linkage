@@ -49,12 +49,19 @@
 (s/def ::x1    (gt-lt 0.0 1.0)) ; 0 seems to cause problems
 (s/def ::x2    (ge-lt 0.0 1.0))
 (s/def ::x3    (ge-lt 0.0 1.0))
+(s/def ::x-freqs #(<= % 1.0))
+;(s/def ::x-freqs (fn [{:keys [x1 x2 x3]}] (<= (+ x1 x2 x3) 1.0)))
 
-(s/def ::indiv-chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
+;; Note that the last "parameter" is calculated, and should be assoc'ed onto the other
+;; parameters before spec testing, e.g. like this?
+;; (let [{:keys [x1 x2 x3]} @c/chart-params$]
+;;   (s/explain-data ::c/chart-params (assoc @c/chart-params$ ::x-freqs (+ x1 x2 x3))))
 
-(s/def ::freqs (fn [{:keys [x1 x2 x3]}] (<= (+ x1 x2 x3) 1.0)))
+;; NOT WORKING RIGHT:
+(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs]))
 
-(s/def ::chart-params (s/and ::indiv-chart-params ::freqs))
+;; Worked, but funky:
+;(s/def ::chart-params (s/or ::indiv ::indiv-chart-params ::xs ::x-freqs))
 
 ;; -------------------------
 ;; app code
@@ -137,26 +144,26 @@
 
 ;; a "form-2" component function (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
 (defn chart-button
-  [svg-id label1 label2]
-  (let [label$ (r/atom label1)] ; runs only once
-    (fn [svg-id label1 label2]  ; called repeatedly
+  [svg-id ready-label running-label error-label]
+  (let [label$ (r/atom ready-label)] ; runs only once
+    (fn [svg-id ready-label label2]  ; called repeatedly
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
                             (reset! chart-param-colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (if-let [spec-data (s/explain-data ::chart-params @chart-params$)] ; if bad inputs. explain-data is nil if data ok.
                               (do
-                                (reset! label$ "Uh-oh!")
+                                (reset! label$ error-label)
                                 (doseq [k (explain-data-problem-keys spec-data)]
-                                  (if k 
-                                    (swap! chart-param-colors$ assoc k error-input-color)
-                                    (doseq [xk [:x1 :x2 :x3]]; if k is nil the :freqs test failed [KLUDGE: FIXME when possible]
-                                      (swap! chart-param-colors$ assoc xk error-input-color))))); [KLUDGE: FIXME when possible]
+                                  (if (= k :x-freqs) ; these need special handling
+                                    (doseq [xk [:x1 :x2 :x3]]; if k is nil the :freqs test failed
+                                      (swap! chart-param-colors$ assoc xk error-input-color))
+                                    (swap! chart-param-colors$ assoc k error-input-color)))) ; no special handling needed
                               (do
                                 (reset! label$ label2) ; button label should show it's running
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                                  (make-chart svg-id chart-params$)
-                                                 (reset! label$ label1))
+                                                 (reset! label$ ready-label))
                                                100))))}
        @label$])))
 
@@ -200,7 +207,7 @@
      [float-input :h params$ float-width "heterozygote coeff"]
      [float-input :max-r params$ float-width "max recomb prob" [:em "r"]]
      [spaces 4]
-     [chart-button svg-id "re-run" "running..."]
+     [chart-button svg-id "re-run" "running..." "Uh-oh!"]
      [:br]
      [float-input :x1 params$ float-width "" [:em "x"] [:sub 1]]
      [float-input :x2 params$ float-width "" [:em "x"] [:sub 2]]
