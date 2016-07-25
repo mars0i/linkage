@@ -47,12 +47,16 @@
 (s/def ::x1    (gt-lt 0.0 1.0)) ; 0 seems to cause problems
 (s/def ::x2    (ge-lt 0.0 1.0))
 (s/def ::x3    (ge-lt 0.0 1.0))
-(s/def ::x1+x2+x3 (gt-le 0.0 1.0))
 
 (s/def ::indiv-chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3]))
 
+(s/def ::freqs (fn [{:keys [x1 x2 x3]}] (<= (+ x1 x2 x3) 1.0)))
+
+(s/def ::chart-params (s/and ::indiv-chart-params ::freqs))
+
 ;; This works, but seems ... wrong:
-(s/def ::freqs (fn [{:keys [x1 x2 x3]}] (s/valid? ::x1+x2+x3 (+ x1 x2 x3))))
+;(s/def ::x1+x2+x3 (gt-le 0.0 1.0))
+;(s/def ::freqs (fn [{:keys [x1 x2 x3]}] (s/valid? ::x1+x2+x3 (+ x1 x2 x3))))
 
 ;; These don't work:
 
@@ -77,8 +81,6 @@
 ;                           sum (+ x1 x2 x3)]
 ;                       #(and (> sum 0.0)
 ;                             (<= sum 1.0)))))
-
-(s/def ::chart-params (s/and ::indiv-chart-params ::freqs))
 
 ;; -------------------------
 ;; app code
