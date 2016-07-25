@@ -171,12 +171,15 @@
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
-                            (if-let [spec-data (s/explain-data ::chart-params @chart-params$)]
-                              (do  ; there were bad inputs
+                            (if-let [spec-data (s/explain-data ::chart-params @chart-params$)] ; if bad inputs. explain-data is nil if data ok.
+                              (do
                                 (reset! label$ "Uh-oh!")
                                 (doseq [k (explain-data-problem-keys spec-data)]
-                                  (swap! chart-param-colors$ assoc k error-input-color)))
-                              (do  ; inputs ok, run the simulations
+                                  (if k 
+                                    (swap! chart-param-colors$ assoc k error-input-color)
+                                    (doseq [xk [:x1 :x2 :x3]]; if k is nil the :freqs test failed [KLUDGE: FIXME when possible]
+                                      (swap! chart-param-colors$ assoc xk error-input-color))))); [KLUDGE: FIXME when possible]
+                              (do
                                 (reset! label$ label2) ; button label should show it's running
                                 (reset! chart-param-colors$ default-chart-param-colors)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
