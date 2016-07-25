@@ -247,8 +247,8 @@
   "Set up main chart page (except for chart)."
   (head)
   [:div
-   [:h2 "Simulations: effect of selection on a linked neutral locus"]
-   [:text "Marshall Abrams (" copyright-sym " 2016, GPL v.3)"]
+   ;[:h2 "Simulations: effect of selection on a linked neutral locus"]
+   ;[:text "Marshall Abrams (" copyright-sym " 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id chart-svg-id :height (str svg-height "px")}]
     [plot-params-form (str "#" chart-svg-id) chart-params$]]])
