@@ -28,10 +28,12 @@
 
 (defn explain-data-problem-keys
   "Given the result of a call to spec/explain-data, returns the keys of 
-  the tests that failed."
+  the tests that failed.  WARNING: This is for 
+  Clojurescript 1.9.89/Clojure 1.9.0-alpha7.  It will have to be changed 
+  to work with Clojure 1.9.0-alpha10."
   [data]
   (map first 
-       (keys  ; will this always work? should I get the :in val?
+       (keys
          (:cljs.spec/problems data))))
 
 (defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
@@ -169,19 +171,18 @@
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
-                            (if (s/valid? ::chart-params @chart-params$)
-                              (do 
+                            (if-let [spec-data (s/explain-data ::chart-params @chart-params$)]
+                              (do  ; there were bad inputs
+                                (reset! label$ "Uh-oh!")
+                                (doseq [k (explain-data-problem-keys spec-data)]
+                                  (swap! chart-param-colors$ assoc k error-input-color)))
+                              (do  ; inputs ok, run the simulations
                                 (reset! label$ label2) ; button label should show it's running
-                                (reset! chart-param-colors$ default-chart-param-colors) ; make sure input text is all the default
+                                (reset! chart-param-colors$ default-chart-param-colors)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                                  (make-chart svg-id chart-params$)
                                                  (reset! label$ label1))
-                                               100))
-                              (do 
-                                (reset! label$ "Uh-oh!")
-                                (doseq [k (explain-data-problem-keys 
-                                            (s/explain-data ::chart-params @chart-params$))]
-                                  (swap! chart-param-colors$ assoc k error-input-color)))))}
+                                               100))))}
        @label$])))
 
 ;; Note: for comparison, in lescent, I used d3 to set the onchange of 
