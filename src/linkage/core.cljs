@@ -5,7 +5,6 @@
 ;; the file LICENSE.
 
 (ns linkage.core
-  ;(:refer-clojure :exclude [boolean?])
   (:require [cljs.pprint :as pp]
             [cljs.spec :as s]
             [reagent.core :as r]
@@ -163,7 +162,6 @@
                             (if-let [spec-data (s/explain-data ::chart-params 
                                                                (prep-params-for-validation @chart-params$))] ; if bad inputs. explain-data is nil if data ok.
                               (do
-                                (println "found errors" chart-params$)
                                 (reset! label$ error-label)
                                 (doseq [k (explain-data-problem-keys spec-data)]
                                   (if (= k :x-freqs) ; :x-freqs needs special handling
