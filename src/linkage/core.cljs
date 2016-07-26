@@ -36,6 +36,8 @@
 (def copyright-sym (goog.string/unescapeEntities "&copy;")) 
 (def nbsp (goog.string/unescapeEntities "&nbsp;")) 
 
+(def button-labels {:ready-label "re-run" :running-label "running..." :error-label "Uh-oh!"})
+
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
                                 :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
@@ -156,9 +158,10 @@
 
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
 (defn chart-button
-  [svg-id ready-label running-label error-label]
-  (let [label$ (r/atom ready-label)] ; runs only once
-    (fn [svg-id ready-label running-label error-label]  ; called repeatedly
+  [svg-id labels]
+  (let [{:keys [ready-label running-label error-label]} labels
+        label$ (r/atom ready-label)] ; runs only once
+    (fn [svg-id _]  ; called repeatedly
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
@@ -218,7 +221,7 @@
      [float-input :h     params$ colors$ float-width "heterozygote coeff"]
      [float-input :max-r params$ colors$ float-width "max recomb prob" [:em "r"]]
      [spaces 4]
-     [chart-button svg-id "re-run" "running..." "Uh-oh!"]
+     [chart-button svg-id button-labels]
      [:br]
      [float-input :x1    params$ colors$ float-width "" [:em "x"] [:sub 1]]
      [float-input :x2    params$ colors$ float-width "" [:em "x"] [:sub 2]]
