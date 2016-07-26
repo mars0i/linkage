@@ -157,11 +157,15 @@
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 (defn chart-button
   "Create submit button runs validation tests on form inputs and changes 
-  its appearance to indicate that the simulations are running."
+  its appearance to indicate that the simulations are running.  svg-id is
+  is of SVG object to which the chart will be attached.  params$ is an atom
+  containing a chart parameter map.  colors$ is an atom containing the text
+  colors for each of the inputs in the form.  labels is a map containing
+  three labels for the button, indicating ready to run, running, or bad inputs."
   [svg-id params$ colors$ labels]
   (let [{:keys [ready-label running-label error-label]} labels
         label$ (r/atom ready-label)] ; runs only once
-    (fn [svg-id params$ colors$ _]  ; called repeatedly. get labels from let.
+    (fn [svg-id params$ colors$ _]   ; called repeatedly. (already have labels from the let)
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
