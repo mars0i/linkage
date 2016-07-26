@@ -25,8 +25,8 @@
 ;; -------------------------
 ;; globals
 
-;; How many simulations to run--i.e. how many recombination rate r values?
-(def num-sims 200)
+
+(def num-sims 200) ; How many simulations to run--i.e. how many recombination rate r values?
 (def svg-height 400)
 (def svg-width 600)
 (def chart-svg-id "chart-svg")
@@ -170,7 +170,7 @@
                                                                (prep-params-for-validation @params$))] ; if bad inputs. explain-data is nil if data ok.
                               (do
                                 (reset! label$ error-label)
-                                (doseq [k (explain-data-problem-keys spec-data)]
+                                (doseq [k (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
                                   (if (= k :x-freqs) ; :x-freqs needs special handling
                                     (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-input-color))
                                     (swap! colors$ assoc k error-input-color)))) ; no special handling needed
