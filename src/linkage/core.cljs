@@ -81,7 +81,8 @@
 ;; (let [{:keys [x1 x2 x3]} @c/chart-params$]
 ;;   (s/explain-data ::c/chart-params (assoc @c/chart-params$ ::x-freqs (+ x1 x2 x3))))
 
-;; NOT WORKING RIGHT:
+;; Note that :x-freqs is not part of the map in global chart-params$; it must be
+;; assoc'ed in before testing with this spec.  See prep-params-for-validation.
 (s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs]))
 
 (defn prep-params-for-validation
@@ -90,11 +91,8 @@
   (let [{:keys [x1 x2 x3]} params]
     (assoc params :x-freqs (+ x1 x2 x3))))
 
-;; Worked, but funky:
-;(s/def ::chart-params (s/or ::indiv ::indiv-chart-params ::xs ::x-freqs))
-
 ;; -------------------------
-;; chart-production code
+;; run simulations, generate chart
 
 (defn het-ratio-coords
   "Generate heterozygosity final/initial ratio for recombination rates r
@@ -149,15 +147,17 @@
 
 
 ;; -------------------------
-;; form for chart parameters, re-running
+;; form: set chart parameters, re-run simulations and chart
 
 (defn spaces 
   "Returns a text element containing n nbsp;'s."
   [n]
   (into [:text] (repeat n nbsp)))
 
-;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
+;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 (defn chart-button
+  "Create submit button runs validation tests on form inputs and changes 
+  its appearance to indicate that the simulations are running."
   [svg-id params$ colors$ labels]
   (let [{:keys [ready-label running-label error-label]} labels
         label$ (r/atom ready-label)] ; runs only once
@@ -211,7 +211,7 @@
                (list [:span {:style {:font-size "12px"}} 
                       (pp/cl-format nil "~,4f" n)]))))
 
-(defn plot-params-form
+(defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id params$ colors$]
   (let [float-width 6
@@ -240,11 +240,9 @@
   "Set up main chart page (except for chart)."
   (head)
   [:div
-   ;[:h2 "Simulations: effect of selection on a linked neutral locus"]
-   ;[:text "Marshall Abrams (" copyright-sym " 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id chart-svg-id :height (str svg-height "px")}]
-    [plot-params-form (str "#" chart-svg-id) chart-params$ chart-param-colors$]]])
+    [chart-params-form (str "#" chart-svg-id) chart-params$ chart-param-colors$]]])
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
