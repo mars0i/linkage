@@ -158,26 +158,26 @@
 
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
 (defn chart-button
-  [svg-id labels]
+  [svg-id params$ colors$ labels]
   (let [{:keys [ready-label running-label error-label]} labels
         label$ (r/atom ready-label)] ; runs only once
-    (fn [svg-id _]  ; called repeatedly
+    (fn [svg-id params$ colors$ _]  ; called repeatedly. get labels from let.
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
-                            (reset! chart-param-colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
+                            (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (if-let [spec-data (s/explain-data ::chart-params 
-                                                               (prep-params-for-validation @chart-params$))] ; if bad inputs. explain-data is nil if data ok.
+                                                               (prep-params-for-validation @params$))] ; if bad inputs. explain-data is nil if data ok.
                               (do
                                 (reset! label$ error-label)
                                 (doseq [k (explain-data-problem-keys spec-data)]
                                   (if (= k :x-freqs) ; :x-freqs needs special handling
-                                    (doseq [xk [:x1 :x2 :x3]] (swap! chart-param-colors$ assoc xk error-input-color))
-                                    (swap! chart-param-colors$ assoc k error-input-color)))) ; no special handling needed
+                                    (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-input-color))
+                                    (swap! colors$ assoc k error-input-color)))) ; no special handling needed
                               (do
                                 (reset! label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
-                                                 (make-chart svg-id chart-params$)
+                                                 (make-chart svg-id params$)
                                                  (reset! label$ ready-label))
                                                100))))}
        @label$])))
@@ -221,7 +221,7 @@
      [float-input :h     params$ colors$ float-width "heterozygote coeff"]
      [float-input :max-r params$ colors$ float-width "max recomb prob" [:em "r"]]
      [spaces 4]
-     [chart-button svg-id button-labels]
+     [chart-button svg-id params$ colors$ button-labels]
      [:br]
      [float-input :x1    params$ colors$ float-width "" [:em "x"] [:sub 1]]
      [float-input :x2    params$ colors$ float-width "" [:em "x"] [:sub 2]]
