@@ -92,7 +92,7 @@
 ;(s/def ::chart-params (s/or ::indiv ::indiv-chart-params ::xs ::x-freqs))
 
 ;; -------------------------
-;; app code
+;; chart-production code
 
 (defn het-ratio-coords
   "Generate heterozygosity final/initial ratio for recombination rates r
@@ -145,12 +145,16 @@
         (call chart))
     chart)) 
 
+
+;; -------------------------
+;; form for chart parameters, re-running
+
 (defn spaces 
   "Returns a text element containing n nbsp;'s."
   [n]
   (into [:text] (repeat n nbsp)))
 
-;; a "form-2" component function (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
+;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components)
 (defn chart-button
   [svg-id ready-label running-label error-label]
   (let [label$ (r/atom ready-label)] ; runs only once
@@ -175,16 +179,15 @@
                                                100))))}
        @label$])))
 
-;; Note: for comparison, in lescent, I used d3 to set the onchange of 
-;; dropdowns to a function that set a single global var for each.
+;; For comparison, in lescent, I used d3 to set the onchange of dropdowns to a function that set a single global var for each.
 (defn float-input 
   "Create a text input that accepts numbers.  k is keyword to be used to extract
   a default value from params$, and to be passed to swap! assoc.  It will also 
   be converted to a string an set as the id and name properties of the input 
   element.  This string will also be used as the name of the variable in the label,
   unless var-label is present, in which it will be used for that purpose."
-  ([k params$ size label] (float-input k params$ size label [:em (name k)]))
-  ([k params$ size label & var-label]
+  ([k params$ colors$ size label] (float-input k params$ colors$ size label [:em (name k)]))
+  ([k params$ colors$ size label & var-label]
    (let [id (name k)
          old-val (k @params$)]
      [:span {:id (str id "-span")}
@@ -192,7 +195,7 @@
       [:input {:id id
                :name id
                :type "text"
-               :style {:color (k @chart-param-colors$)} ;; PASS AS ARG?
+               :style {:color (k @colors$)}
                :size size
                :defaultValue old-val
                :on-change #(swap! params$ assoc k (js/parseFloat (-> % .-target .-value)))}]
@@ -207,19 +210,19 @@
 
 (defn plot-params-form
   "Create form to allow changing model parameters and creating a new chart."
-  [svg-id params$]
+  [svg-id params$ colors$]
   (let [float-width 6
         {:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [float-input :s params$ float-width "selection coeff"]
-     [float-input :h params$ float-width "heterozygote coeff"]
-     [float-input :max-r params$ float-width "max recomb prob" [:em "r"]]
+     [float-input :s     params$ colors$ float-width "selection coeff"]
+     [float-input :h     params$ colors$ float-width "heterozygote coeff"]
+     [float-input :max-r params$ colors$ float-width "max recomb prob" [:em "r"]]
      [spaces 4]
      [chart-button svg-id "re-run" "running..." "Uh-oh!"]
      [:br]
-     [float-input :x1 params$ float-width "" [:em "x"] [:sub 1]]
-     [float-input :x2 params$ float-width "" [:em "x"] [:sub 2]]
-     [float-input :x3 params$ float-width "" [:em "x"] [:sub 3]]
+     [float-input :x1    params$ colors$ float-width "" [:em "x"] [:sub 1]]
+     [float-input :x2    params$ colors$ float-width "" [:em "x"] [:sub 2]]
+     [float-input :x3    params$ colors$ float-width "" [:em "x"] [:sub 3]]
      [spaces 3]
      [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
      [spaces 13]
@@ -238,7 +241,7 @@
    ;[:text "Marshall Abrams (" copyright-sym " 2016, GPL v.3)"]
    [:div {:id "chart-div"}
     [:svg {:id chart-svg-id :height (str svg-height "px")}]
-    [plot-params-form (str "#" chart-svg-id) chart-params$]]])
+    [plot-params-form (str "#" chart-svg-id) chart-params$ chart-param-colors$]]])
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
