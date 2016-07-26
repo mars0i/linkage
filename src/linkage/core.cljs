@@ -24,6 +24,29 @@
 ;; Note: I name atoms with a terminal $ .
 
 ;; -------------------------
+;; globals
+
+;; How many simulations to run--i.e. how many recombination rate r values?
+(def num-sims 200)
+(def svg-height 400)
+(def svg-width 600)
+(def chart-svg-id "chart-svg")
+(def default-input-color "#000000")
+(def error-input-color   "#FF0000")
+
+(def copyright-sym (goog.string/unescapeEntities "&copy;")) 
+(def nbsp (goog.string/unescapeEntities "&nbsp;")) 
+
+;; Default simulation parameters
+(defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
+                                :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
+
+(defonce default-chart-param-colors (zipmap (keys @chart-params$) 
+                                            (repeat default-input-color)))
+
+(defonce chart-param-colors$ (r/atom default-chart-param-colors))
+
+;; -------------------------
 ;; spec
 
 (defn explain-data-problem-keys
@@ -42,7 +65,7 @@
 (defn gt-lt [inf sup] (s/and #(>  % inf) #(<  % sup)))
 
 ;; These expect to get numbers passed to them:
-(s/def ::max-r (gt-le 0.0 0.5))
+(s/def ::max-r (gt-le 0.0 1.0))
 (s/def ::s     (gt-le 0.0 1.0))
 (s/def ::h     (gt-lt 0.0 1.0))
 ;; setting freqs to 1 causes problems:
@@ -60,31 +83,17 @@
 ;; NOT WORKING RIGHT:
 (s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs]))
 
+(defn prep-params-for-validation
+  "assoc into params any entries needed for validation with spec."
+  [params]
+  (let [{:keys [x1 x2 x3]} params]
+    (assoc params :x-freqs (+ x1 x2 x3))))
+
 ;; Worked, but funky:
 ;(s/def ::chart-params (s/or ::indiv ::indiv-chart-params ::xs ::x-freqs))
 
 ;; -------------------------
 ;; app code
-
-;; How many simulations to run--i.e. how many recombination rate r values?
-(def num-sims 100)
-(def svg-height 400)
-(def svg-width 600)
-(def chart-svg-id "chart-svg")
-(def default-input-color "#000000")
-(def error-input-color   "#FF0000")
-
-(def copyright-sym (goog.string/unescapeEntities "&copy;")) 
-(def nbsp (goog.string/unescapeEntities "&nbsp;")) 
-
-;; Default simulation parameters
-(defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
-                                :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
-
-(defonce default-chart-param-colors (zipmap (keys @chart-params$) 
-                                            (repeat default-input-color)))
-
-(defonce chart-param-colors$ (r/atom default-chart-param-colors))
 
 (defn het-ratio-coords
   "Generate heterozygosity final/initial ratio for recombination rates r
@@ -146,21 +155,22 @@
 (defn chart-button
   [svg-id ready-label running-label error-label]
   (let [label$ (r/atom ready-label)] ; runs only once
-    (fn [svg-id ready-label label2]  ; called repeatedly
+    (fn [svg-id ready-label running-label error-label]  ; called repeatedly
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
                             (reset! chart-param-colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
-                            (if-let [spec-data (s/explain-data ::chart-params @chart-params$)] ; if bad inputs. explain-data is nil if data ok.
+                            (if-let [spec-data (s/explain-data ::chart-params 
+                                                               (prep-params-for-validation @chart-params$))] ; if bad inputs. explain-data is nil if data ok.
                               (do
+                                (println "found errors" chart-params$)
                                 (reset! label$ error-label)
                                 (doseq [k (explain-data-problem-keys spec-data)]
-                                  (if (= k :x-freqs) ; these need special handling
-                                    (doseq [xk [:x1 :x2 :x3]]; if k is nil the :freqs test failed
-                                      (swap! chart-param-colors$ assoc xk error-input-color))
+                                  (if (= k :x-freqs) ; :x-freqs needs special handling
+                                    (doseq [xk [:x1 :x2 :x3]] (swap! chart-param-colors$ assoc xk error-input-color))
                                     (swap! chart-param-colors$ assoc k error-input-color)))) ; no special handling needed
                               (do
-                                (reset! label$ label2) ; button label should show it's running
+                                (reset! label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                                  (make-chart svg-id chart-params$)
                                                  (reset! label$ ready-label))
