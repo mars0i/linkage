@@ -31,12 +31,16 @@
 (def svg-width 600)
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
-(def error-input-color   "#FF0000")
+(def error-color   "#FF0000")
 
 (def copyright-sym (goog.string/unescapeEntities "&copy;")) 
 (def nbsp (goog.string/unescapeEntities "&nbsp;")) 
 
-(def button-labels {:ready-label "re-run" :running-label "running..." :error-label "Uh-oh!"})
+(def form-labels {:ready-label "re-run" 
+                  :running-label "running..." 
+                  :error-label (str "One or more values in red are illegal." 
+                                    nbsp
+                                    " They lie outside limits described below.")})
 
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
@@ -46,6 +50,9 @@
                                             (repeat default-input-color)))
 
 (defonce chart-param-colors$ (r/atom default-chart-param-colors))
+
+(defonce no-error nbsp)
+(defonce error-text$ (r/atom no-error))
 
 ;; -------------------------
 ;; spec
@@ -164,27 +171,28 @@
   three labels for the button, indicating ready to run, running, or bad inputs."
   [svg-id params$ colors$ labels]
   (let [{:keys [ready-label running-label error-label]} labels
-        label$ (r/atom ready-label)] ; runs only once
+        button-label$ (r/atom ready-label)] ; runs only once
     (fn [svg-id params$ colors$ _]   ; called repeatedly. (already have labels from the let)
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
+                            (reset! error-text$ no-error)
                             (if-let [spec-data (s/explain-data ::chart-params 
                                                                (prep-params-for-validation @params$))] ; if bad inputs. explain-data is nil if data ok.
                               (do
-                                (reset! label$ error-label)
+                                (reset! error-text$ error-label)
                                 (doseq [k (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
                                   (if (= k :x-freqs) ; :x-freqs needs special handling
-                                    (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-input-color))
-                                    (swap! colors$ assoc k error-input-color)))) ; no special handling needed
+                                    (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-color))
+                                    (swap! colors$ assoc k error-color)))) ; no special handling needed
                               (do
-                                (reset! label$ running-label)
+                                (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
                                                  (make-chart svg-id params$)
-                                                 (reset! label$ ready-label))
+                                                 (reset! button-label$ ready-label))
                                                100))))}
-       @label$])))
+       @button-label$])))
 
 ;; For comparison, in lescent, I used d3 to set the onchange of dropdowns to a function that set a single global var for each.
 (defn float-input 
@@ -225,7 +233,7 @@
      [float-input :h     params$ colors$ float-width "heterozygote coeff"]
      [float-input :max-r params$ colors$ float-width "max recomb prob" [:em "r"]]
      [spaces 4]
-     [chart-button svg-id params$ colors$ button-labels]
+     [chart-button svg-id params$ colors$ form-labels]
      [:br]
      [float-input :x1    params$ colors$ float-width "" [:em "x"] [:sub 1]]
      [float-input :x2    params$ colors$ float-width "" [:em "x"] [:sub 2]]
@@ -233,7 +241,11 @@
      [spaces 3]
      [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
      [spaces 13]
-     [float-text (two/B-het [x1 x2 x3]) "initial neutral heterozygosity"]]))
+     [float-text (two/B-het [x1 x2 x3]) "initial neutral heterozygosity"]
+     [:br]
+     [:div {:id "error-text" 
+            :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "center"}} ; TODO move styles into css file?
+      [:text @error-text$]]]))
 
 (defn head []
   [:head
