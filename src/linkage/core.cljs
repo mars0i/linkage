@@ -40,7 +40,7 @@
                   :running-label "running..." 
                   :error-label (str "One or more values in red are illegal." 
                                     nbsp
-                                    " They lie outside limits described below.")})
+                                    "See " [:em "Parameter ranges"] "below.")})
 
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
