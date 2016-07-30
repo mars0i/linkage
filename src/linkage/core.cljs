@@ -38,9 +38,8 @@
 
 (def form-labels {:ready-label "re-run" 
                   :running-label "running..." 
-                  :error-label (str "One or more values in red are illegal." 
-                                    nbsp
-                                    "See " [:em "Parameter ranges"] "below.")})
+                  :error-text [:text "One or more values in red are illegal." 
+                                nbsp "See " [:em "Parameter ranges"] " below."]})
 
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
@@ -51,8 +50,8 @@
 
 (defonce chart-param-colors$ (r/atom default-chart-param-colors))
 
-(defonce no-error nbsp)
-(defonce error-text$ (r/atom no-error))
+(defonce no-error-text [:text])
+(defonce error-text$ (r/atom no-error-text))
 
 ;; -------------------------
 ;; spec
@@ -170,18 +169,18 @@
   colors for each of the inputs in the form.  labels is a map containing
   three labels for the button, indicating ready to run, running, or bad inputs."
   [svg-id params$ colors$ labels]
-  (let [{:keys [ready-label running-label error-label]} labels
+  (let [{:keys [ready-label running-label error-text]} labels
         button-label$ (r/atom ready-label)] ; runs only once
     (fn [svg-id params$ colors$ _]   ; called repeatedly. (already have labels from the let)
       [:button {:type "button" 
                 :id "chart-button"
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
-                            (reset! error-text$ no-error)
+                            (reset! error-text$ no-error-text)
                             (if-let [spec-data (s/explain-data ::chart-params 
                                                                (prep-params-for-validation @params$))] ; if bad inputs. explain-data is nil if data ok.
                               (do
-                                (reset! error-text$ error-label)
+                                (reset! error-text$ error-text)
                                 (doseq [k (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
                                   (if (= k :x-freqs) ; :x-freqs needs special handling
                                     (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-color))
@@ -244,8 +243,8 @@
      [float-text (two/B-het [x1 x2 x3]) "initial neutral heterozygosity"]
      [:br]
      [:div {:id "error-text" 
-            :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "center"}} ; TODO move styles into css file?
-      [:text @error-text$]]]))
+            :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
+       @error-text$]]))
 
 (defn head []
   [:head
