@@ -1,9 +1,12 @@
 Allowed parameter ranges
 
-Some parameters will make it run for a long time.  This may cause the
-Clojurescript version to fail.  These values are based on testing in
-Clojure.  It also could be that there are combinations of parameters
-that will fail even though they would be OK individually.
+The values below are based on testing in Clojure.  It also could be that
+there are combinations of parameters that will fail even though they
+would be OK individually.  I haven't investigated that.  i.e. these are
+parameters that should work in at least some combinations.
+
+Some parameters will make it run for a long time, and might cause the
+Clojurescript version to fail even if the parameters are legal.
 
 r [0,1]
 
@@ -20,9 +23,11 @@ x2 [0,1]
 x3 [0,1]
 
 x1+x2+x3 [0,1]
+Note that x4 = 1 - (x1 + x2 + x3)
 
 x1+x2 (0,1]
-You have to have positive initial frequency in x1 or x3, or it will run
-forever or until the system gives up, because there will be no variation 
-at the linked neutral locus and the frequencies there will always
-remain below the threshold for continuing.
+You have to have positive initial frequency in x1 or x3, which are the
+haplotype frequencies that include the focal neutral B allele, or the
+simulation will run forever or until the system gives up, because there
+will be no variation at the linked neutral locus and the frequencies
+there will always remain below the threshold for continuing.
