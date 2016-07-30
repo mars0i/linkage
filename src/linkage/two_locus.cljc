@@ -66,13 +66,18 @@
   (iterate (partial next-gen-hap-freqs r s h)
            [x1 x2 x3]))
 
-;; How to display generation numbers concisely:
-;; (let [gen (atom 0)
-;;       ticker (fn [x] (print (apply str (repeat 8 \backspace)))
-;;                      (print (swap! gen inc)))]
-;;    (map ticker (hap-freqs r s h x1 x2 x3)))
-;; in one line:
-;; (let [gen (atom 0) ticker (fn [x] (print (apply str (repeat 8 \backspace))) (print (swap! gen inc)))] (map ticker (hap-freqs r s h x1 x2 x3)))
+;; To use an instrumented hap-freqs that displays the 1-based generation 
+;; number, comment from just inside the hap-freq def to the next line.
+(defn ticking-hap-freqs
+  [r s h x1 x2 x3]
+  (let [gen (atom 0)
+        ticker (fn [x] (print (apply str (repeat 8 \backspace))) ; erase previous generation number
+                       (print (swap! gen inc)) ; print new generation number
+		       x)]
+    (map ticker 
+         (iterate (partial next-gen-hap-freqs r s h)
+                  [x1 x2 x3]))))
+
 
 (defn freqs-at-p1-threshold
   "Given a sequence of haplotype frequency triples, returns the first
@@ -111,15 +116,3 @@
    (let [threshold 0.9999] ; make into a parameter?
      (B-het-ratio-at-p1-threshold threshold
                                   (hap-freqs r s h x1 x2 x3)))))
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; old version of last expression in next-gen-hap-freqs:
-;        r-w14-D (* r w14 D)]       ; a repeated product below
-;      (map #(/ % w-bar)               ; cf. pp. 107,117
-;           [(- (* x1 w-bar-1) r-w14-D)
-;            (+ (* x2 w-bar-1) r-w14-D) 
-;            (+ (* x3 w-bar-3) r-w14-D) 
-;            (- (* x4 w-bar-3) r-w14-D)])))
