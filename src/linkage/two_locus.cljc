@@ -66,6 +66,14 @@
   (iterate (partial next-gen-hap-freqs r s h)
            [x1 x2 x3]))
 
+;; How to display generation numbers concisely:
+;; (let [gen (atom 0)
+;;       ticker (fn [x] (print (apply str (repeat 8 \backspace)))
+;;                      (print (swap! gen inc)))]
+;;    (map ticker (hap-freqs r s h x1 x2 x3)))
+;; in one line:
+;; (let [gen (atom 0) ticker (fn [x] (print (apply str (repeat 8 \backspace))) (print (swap! gen inc)))] (map ticker (hap-freqs r s h x1 x2 x3)))
+
 (defn freqs-at-p1-threshold
   "Given a sequence of haplotype frequency triples, returns the first
   triple for which the value of p1 = x1 + x2 is > threshold."
