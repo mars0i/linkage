@@ -1,7 +1,7 @@
 # linkage
 
-Experiments with linkage disequilibrium using Clojurescript, NVD3,
-d3.js, Reagent (react.js), and figwheel.
+Experiments with linkage disequilibrium using Clojurescript,
+clojure.spec (cljs.spec), NVD3, d3.js, Reagent (react.js), and figwheel.
 
 ## Overview
 
