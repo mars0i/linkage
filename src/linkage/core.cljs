@@ -39,7 +39,7 @@
 (def form-labels {:ready-label "re-run" 
                   :running-label "running..." 
                   :error-text [:text "One or more values in red are illegal." 
-                                nbsp "See " [:em "Parameter ranges"] " below."]})
+                                nbsp "See " [:em "Parameter ranges"] " on the More Information page"]})
 
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
@@ -71,31 +71,31 @@
 (defn gt-le [inf sup] (s/and #(>  % inf) #(<= % sup)))
 (defn gt-lt [inf sup] (s/and #(>  % inf) #(<  % sup)))
 
-;; These expect to get numbers passed to them:
-(s/def ::max-r (gt-le 0.0 1.0))
+(s/def ::max-r (ge-le 0.0 1.0))
 (s/def ::s     (gt-le 0.0 1.0))
-(s/def ::h     (gt-lt 0.0 1.0))
-;; setting freqs to 1 causes problems:
-(s/def ::x1    (gt-lt 0.0 1.0)) ; 0 seems to cause problems
-(s/def ::x2    (ge-lt 0.0 1.0))
-(s/def ::x3    (ge-lt 0.0 1.0))
-(s/def ::x-freqs #(<= % 1.0))
-;(s/def ::x-freqs (fn [{:keys [x1 x2 x3]}] (<= (+ x1 x2 x3) 1.0)))
+(s/def ::h     (ge-le 0.0 1.0))
+(s/def ::x1    (ge-le 0.0 1.0))
+(s/def ::x2    (ge-le 0.0 1.0))
+(s/def ::x3    (ge-le 0.0 1.0))
+(s/def ::x-freqs #(<= % 1.0)) ; will be passed x1+x2+x3
+(s/def ::B-freqs #(> % 0.0))  ; will be passed x1+x3
 
-;; Note that the last "parameter" is calculated, and should be assoc'ed onto the other
-;; parameters before spec testing, e.g. like this?
+;; Note that the last "parameters" are calculated, and should be assoc'ed onto the other
+;; parameters before spec testing, e.g. like this:
 ;; (let [{:keys [x1 x2 x3]} @c/chart-params$]
 ;;   (s/explain-data ::c/chart-params (assoc @c/chart-params$ ::x-freqs (+ x1 x2 x3))))
 
-;; Note that :x-freqs is not part of the map in global chart-params$; it must be
-;; assoc'ed in before testing with this spec.  See prep-params-for-validation.
+;; Note that :x-freqs and :B-freqs are not part of the map in global chart-params$; 
+;; they must be ;; assoc'ed in before testing with this spec.  See prep-params-for-validation.
 (s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs]))
 
 (defn prep-params-for-validation
   "assoc into params any entries needed for validation with spec."
   [params]
   (let [{:keys [x1 x2 x3]} params]
-    (assoc params :x-freqs (+ x1 x2 x3))))
+    (-> params
+        (assoc :x-freqs (+ x1 x2 x3))
+        (assoc :B-freqs (+ x1 x3)))))
 
 ;; -------------------------
 ;; run simulations, generate chart
@@ -177,14 +177,13 @@
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (reset! error-text$ no-error-text)
-                            (if-let [spec-data (s/explain-data ::chart-params 
-                                                               (prep-params-for-validation @params$))] ; if bad inputs. explain-data is nil if data ok.
+                            (if-let [spec-data (s/explain-data ::chart-params (prep-params-for-validation @params$))] ; if bad inputs (nil if ok)
                               (do
                                 (reset! error-text$ error-text)
                                 (doseq [k (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
-                                  (if (= k :x-freqs) ; :x-freqs needs special handling
-                                    (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-color))
-                                    (swap! colors$ assoc k error-color)))) ; no special handling needed
+                                  (cond (= k :x-freqs) (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-color)) ; special case
+                                        (= k :B-freqs) (doseq [xk [:x1 :x3]]     (swap! colors$ assoc xk error-color)) ; special case
+                                        :else (swap! colors$ assoc k error-color)))) ; generic case
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
