@@ -87,7 +87,7 @@
 
 ;; Note that :x-freqs and :B-freqs are not part of the map in global chart-params$; 
 ;; they must be ;; assoc'ed in before testing with this spec.  See prep-params-for-validation.
-(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs]))
+(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs ::B-freqs]))
 
 (defn prep-params-for-validation
   "assoc into params any entries needed for validation with spec."
