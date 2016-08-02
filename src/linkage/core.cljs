@@ -90,7 +90,7 @@
 (s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs ::B-freqs]))
 
 (defn prep-params-for-validation
-  "assoc into params any entries needed for validation with spec."
+  "assoc into params any additional entries needed for validation with spec."
   [params]
   (let [{:keys [x1 x2 x3]} params]
     (-> params
