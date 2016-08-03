@@ -180,10 +180,12 @@
                             (if-let [spec-data (s/explain-data ::chart-params (prep-params-for-validation @params$))] ; if bad inputs (nil if ok)
                               (do
                                 (reset! error-text$ error-text)
-                                (doseq [k (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
-                                  (cond (= k :x-freqs) (doseq [xk [:x1 :x2 :x3]] (swap! colors$ assoc xk error-color)) ; special case
-                                        (= k :B-freqs) (doseq [xk [:x1 :x3]]     (swap! colors$ assoc xk error-color)) ; special case
-                                        :else (swap! colors$ assoc k error-color)))) ; generic case
+                                (doseq [ki (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
+                                  (let [ks (cond (= ki :x-freqs) [:x1 :x2 :x3] ; special case--need to highlight multiple fields
+                                                 (= ki :B-freqs) [:x1 :x3]     ; ditto
+                                                 :else [ki])] ; degenerate default: only one field to highlight this time
+                                    (doseq [k ks]
+                                      (swap! colors$ assoc k error-color)))))
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
