@@ -12,7 +12,7 @@ nvd3 plot of the results, following the material in John Gillespie's
 University Press 2004, section 4.2, as described in Problem 4.3.  Also
 note Gillespie's Python implementation at the end of the chapter
 (which has a mistake in one line, btw--perhaps intentionally?).
-[This page](https://rawgit.com/mars0i/linkage/master/resources/public/TwoLocusInfo.html) has more information.
+[This page](http://members.logical.net/~marshall/linkage/TwoLocusInfo.html) has more information.
 
 ## License
 
